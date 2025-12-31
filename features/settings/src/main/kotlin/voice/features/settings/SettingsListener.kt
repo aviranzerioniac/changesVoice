@@ -5,6 +5,8 @@ import java.time.LocalTime
 interface SettingsListener {
   fun close()
   fun toggleDarkTheme()
+  fun onThemeClick()
+  fun onThemeSelect(theme: voice.core.data.ThemeOption)
   fun toggleGrid()
   fun seekAmountChanged(seconds: Int)
   fun onSeekAmountRowClick()
@@ -25,6 +27,8 @@ interface SettingsListener {
     fun noop() = object : SettingsListener {
       override fun close() {}
       override fun toggleDarkTheme() {}
+      override fun onThemeClick() {}
+      override fun onThemeSelect(theme: voice.core.data.ThemeOption) {}
       override fun toggleGrid() {}
       override fun seekAmountChanged(seconds: Int) {}
       override fun onSeekAmountRowClick() {}

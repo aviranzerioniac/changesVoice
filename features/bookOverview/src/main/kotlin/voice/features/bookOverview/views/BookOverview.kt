@@ -3,6 +3,7 @@ package voice.features.bookOverview.views
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -41,10 +42,18 @@ import voice.features.bookOverview.bottomSheet.BottomSheetItem
 import voice.features.bookOverview.deleteBook.DeleteBookDialog
 import voice.features.bookOverview.di.BookOverviewGraph
 import voice.features.bookOverview.editTitle.EditBookTitleDialog
+import voice.features.bookOverview.overview.BookFilterOption
 import voice.features.bookOverview.overview.BookOverviewCategory
+import voice.features.bookOverview.overview.BookOverviewGrouping
 import voice.features.bookOverview.overview.BookOverviewItemViewState
 import voice.features.bookOverview.overview.BookOverviewLayoutMode
 import voice.features.bookOverview.overview.BookOverviewViewState
+import voice.features.bookOverview.overview.BookSortOption
+import voice.features.bookOverview.overview.CategorySelector
+import voice.features.bookOverview.overview.CurrentlyReadingSection
+import voice.features.bookOverview.overview.FilterSelector
+import voice.features.bookOverview.overview.GroupedBooksList
+import voice.features.bookOverview.overview.SortSelector
 import voice.features.bookOverview.search.BookSearchViewState
 import voice.features.bookOverview.views.topbar.BookOverviewTopBar
 import voice.navigation.Destination
@@ -106,6 +115,9 @@ fun BookOverviewScreen(modifier: Modifier = Modifier) {
     onSearchQueryChange = bookOverviewViewModel::onSearchQueryChange,
     onSearchBookClick = bookOverviewViewModel::onSearchBookClick,
     onPermissionBugCardClick = bookOverviewViewModel::onPermissionBugCardClick,
+    onGroupingChange = bookOverviewViewModel::onGroupingChange,
+    onSortChange = bookOverviewViewModel::onSortChange,
+    onFilterChange = bookOverviewViewModel::onFilterChange,
   )
   val deleteBookViewState = deleteBookViewModel.state.value
   if (deleteBookViewState != null) {
@@ -165,6 +177,9 @@ internal fun BookOverview(
   onSearchQueryChange: (String) -> Unit,
   onSearchBookClick: (BookId) -> Unit,
   onPermissionBugCardClick: () -> Unit,
+  onGroupingChange: (BookOverviewGrouping) -> Unit,
+  onSortChange: (BookSortOption) -> Unit,
+  onFilterChange: (BookFilterOption) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -198,24 +213,68 @@ internal fun BookOverview(
         .padding(contentPadding)
         .consumeWindowInsets(contentPadding),
     ) {
-      when (viewState.layoutMode) {
-        BookOverviewLayoutMode.List -> {
-          ListBooks(
-            books = viewState.books,
-            onBookClick = onBookClick,
-            onBookLongClick = onBookLongClick,
-            showPermissionBugCard = viewState.showStoragePermissionBugCard,
-            onPermissionBugCardClick = onPermissionBugCardClick,
+      Column {
+        if (!viewState.searchActive && viewState.books.isNotEmpty()) {
+          // Currently reading section at the top
+          viewState.currentlyReading?.let { currentBook ->
+            CurrentlyReadingSection(
+              book = currentBook,
+              onBookClick = { onBookClick(currentBook.id) },
+            )
+          }
+
+          // Category selector
+          CategorySelector(
+            selectedGrouping = viewState.grouping,
+            onGroupingChange = onGroupingChange,
+          )
+
+          // Sort and filter selectors
+          SortSelector(
+            selectedSort = viewState.sortOption,
+            onSortChange = onSortChange,
+          )
+
+          FilterSelector(
+            selectedFilter = viewState.filterOption,
+            onFilterChange = onFilterChange,
           )
         }
-        BookOverviewLayoutMode.Grid -> {
-          GridBooks(
-            books = viewState.books,
-            onBookClick = onBookClick,
-            onBookLongClick = onBookLongClick,
-            showPermissionBugCard = viewState.showStoragePermissionBugCard,
-            onPermissionBugCardClick = onPermissionBugCardClick,
-          )
+        
+        when {
+          viewState.searchActive -> {
+            // Keep existing search behavior
+            when (viewState.layoutMode) {
+              BookOverviewLayoutMode.List -> {
+                ListBooks(
+                  books = viewState.books,
+                  onBookClick = onBookClick,
+                  onBookLongClick = onBookLongClick,
+                  showPermissionBugCard = viewState.showStoragePermissionBugCard,
+                  onPermissionBugCardClick = onPermissionBugCardClick,
+                )
+              }
+              BookOverviewLayoutMode.Grid -> {
+                GridBooks(
+                  books = viewState.books,
+                  onBookClick = onBookClick,
+                  onBookLongClick = onBookLongClick,
+                  showPermissionBugCard = viewState.showStoragePermissionBugCard,
+                  onPermissionBugCardClick = onPermissionBugCardClick,
+                )
+              }
+            }
+          }
+          else -> {
+            GroupedBooksList(
+              groupedBooks = viewState.groupedBooks,
+              grouping = viewState.grouping,
+              layoutMode = viewState.layoutMode,
+              onBookClick = { onBookClick(it.id) },
+              onBookLongClick = { onBookLongClick(it.id) },
+              currentlyReading = viewState.currentlyReading,
+            )
+          }
         }
       }
     }
@@ -241,6 +300,9 @@ fun BookOverviewPreview(
       onSearchQueryChange = {},
       onSearchBookClick = {},
       onPermissionBugCardClick = {},
+      onGroupingChange = {},
+      onSortChange = {},
+      onFilterChange = {},
     )
   }
 }
@@ -264,6 +326,10 @@ internal class BookOverviewPreviewParameterProvider : PreviewParameterProvider<B
         BookOverviewCategory.CURRENT to buildList { repeat(10) { add(book()) } },
         BookOverviewCategory.FINISHED to listOf(book(), book()),
       ),
+      groupedBooks = emptyList(),
+      grouping = BookOverviewGrouping.COMPLETION_STATUS,
+      sortOption = BookSortOption.ALPHABETICAL,
+      filterOption = BookFilterOption.ALL,
       layoutMode = BookOverviewLayoutMode.List,
       playButtonState = BookOverviewViewState.PlayButtonState.Paused,
       showAddBookHint = false,
@@ -276,6 +342,7 @@ internal class BookOverviewPreviewParameterProvider : PreviewParameterProvider<B
         query = "",
       ),
       showStoragePermissionBugCard = false,
+      currentlyReading = null,
     ),
   )
 }

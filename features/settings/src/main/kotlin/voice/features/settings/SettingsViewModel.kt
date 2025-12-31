@@ -14,6 +14,7 @@ import voice.core.common.AppInfoProvider
 import voice.core.common.DispatcherProvider
 import voice.core.common.MainScope
 import voice.core.data.GridMode
+import voice.core.data.ThemeOption
 import voice.core.data.sleeptimer.SleepTimerPreference
 import voice.core.data.store.AnalyticsConsentStore
 import voice.core.data.store.AutoRewindAmountStore
@@ -21,6 +22,7 @@ import voice.core.data.store.DarkThemeStore
 import voice.core.data.store.GridModeStore
 import voice.core.data.store.SeekTimeStore
 import voice.core.data.store.SleepTimerPreferenceStore
+import voice.core.data.store.ThemeStore
 import voice.core.ui.DARK_THEME_SETTABLE
 import voice.core.ui.GridCount
 import voice.navigation.Destination
@@ -31,6 +33,8 @@ import java.time.LocalTime
 class SettingsViewModel(
   @DarkThemeStore
   private val useDarkThemeStore: DataStore<Boolean>,
+  @ThemeStore
+  private val themeStore: DataStore<ThemeOption>,
   @AutoRewindAmountStore
   private val autoRewindAmountStore: DataStore<Int>,
   @SeekTimeStore
@@ -51,8 +55,7 @@ class SettingsViewModel(
   private val dialog = mutableStateOf<SettingsViewState.Dialog?>(null)
 
   @Composable
-  fun viewState(): SettingsViewState {
-    val useDarkTheme by remember { useDarkThemeStore.data }.collectAsState(initial = false)
+  fun viselectedTheme by remember { themeStore.data }.collectAsState(initial = ThemeOption.SYSTEM)
     val autoRewindAmount by remember { autoRewindAmountStore.data }.collectAsState(initial = 0)
     val seekTime by remember { seekTimeStore.data }.collectAsState(initial = 0)
     val gridMode by remember { gridModeStore.data }.collectAsState(initial = GridMode.GRID)
@@ -61,6 +64,9 @@ class SettingsViewModel(
     )
     val analyticsEnabled by remember { analyticsConsentStore.data }.collectAsState(initial = false)
     return SettingsViewState(
+      useDarkTheme = useDarkTheme,
+      showDarkThemePref = DARK_THEME_SETTABLE,
+      selectedTheme = selectedTheme
       useDarkTheme = useDarkTheme,
       showDarkThemePref = DARK_THEME_SETTABLE,
       seekTimeInSeconds = seekTime,
@@ -187,6 +193,16 @@ class SettingsViewModel(
   override fun toggleAnalytics() {
     mainScope.launch {
       analyticsConsentStore.updateData { !it }
+
+  override fun onThemeClick() {
+    dialog.value = SettingsViewState.Dialog.ThemeSelection
+  }
+
+  override fun onThemeSelect(theme: ThemeOption) {
+    mainScope.launch {
+      themeStore.updateData { theme }
+    }
+  }
     }
   }
 }

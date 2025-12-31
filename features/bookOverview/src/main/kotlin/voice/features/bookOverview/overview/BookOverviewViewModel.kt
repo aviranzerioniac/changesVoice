@@ -47,6 +47,12 @@ class BookOverviewViewModel(
   private val currentBookStoreDataStore: DataStore<BookId?>,
   @GridModeStore
   private val gridModeStore: DataStore<GridMode>,
+  @BookGroupingStore
+  private val bookGroupingStore: DataStore<BookOverviewGrouping>,
+  @BookSortStore
+  private val bookSortStore: DataStore<BookSortOption>,
+  @BookFilterStore
+  private val bookFilterStore: DataStore<BookFilterOption>,
   private val gridCount: GridCount,
   private val navigator: Navigator,
   private val recentBookSearchDao: RecentBookSearchDao,
@@ -78,6 +84,12 @@ class BookOverviewViewModel(
     val gridMode = remember { gridModeStore.data }
       .collectAsState(initial = null).value
       ?: return BookOverviewViewState.Loading
+    val grouping = remember { bookGroupingStore.data }
+      .collectAsState(initial = BookOverviewGrouping.COMPLETION_STATUS).value
+    val sortOption = remember { bookSortStore.data }
+      .collectAsState(initial = BookSortOption.ALPHABETICAL).value
+    val filterOption = remember { bookFilterStore.data }
+      .collectAsState(initial = BookFilterOption.ALL).value
 
     val noBooks = !scannerActive && books.isEmpty()
 
@@ -92,6 +104,11 @@ class BookOverviewViewModel(
     }
 
     val bookSearchViewState = bookSearchViewState(layoutMode)
+
+    val groupedBooks = books.groupByStrategy(grouping, sortOption, filterOption) { it.toItemViewState() }
+    val currentlyReadingBook = currentBookId?.let { id ->
+      books.find { it.id == id }?.toItemViewState()
+    }
 
     return BookOverviewViewState(
       layoutMode = layoutMode,
@@ -108,6 +125,10 @@ class BookOverviewViewModel(
         }
         .toSortedMap()
         .toImmutableMap(),
+      groupedBooks = groupedBooks,
+      grouping = grouping,
+      sortOption = sortOption,
+      filterOption = filterOption,
       playButtonState = if (playState == PlayStateManager.PlayState.Playing) {
         BookOverviewViewState.PlayButtonState.Playing
       } else {
@@ -123,6 +144,7 @@ class BookOverviewViewModel(
       searchActive = searchActive,
       searchViewState = bookSearchViewState,
       showStoragePermissionBugCard = hasStoragePermissionBug,
+      currentlyReading = currentlyReadingBook,
     )
   }
 
@@ -205,6 +227,24 @@ class BookOverviewViewModel(
 
   fun playPause() {
     playerController.playPause()
+  }
+
+  fun onGroupingChange(grouping: BookOverviewGrouping) {
+    scope.launch {
+      bookGroupingStore.updateData { grouping }
+    }
+  }
+
+  fun onSortChange(sortOption: BookSortOption) {
+    scope.launch {
+      bookSortStore.updateData { sortOption }
+    }
+  }
+
+  fun onFilterChange(filterOption: BookFilterOption) {
+    scope.launch {
+      bookFilterStore.updateData { filterOption }
+    }
   }
 
   fun onPermissionBugCardClick() {

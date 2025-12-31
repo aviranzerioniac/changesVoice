@@ -8,6 +8,10 @@ import voice.features.bookOverview.search.BookSearchViewState
 @Immutable
 data class BookOverviewViewState(
   val books: ImmutableMap<BookOverviewCategory, List<BookOverviewItemViewState>>,
+  val groupedBooks: List<GroupedBooks>,
+  val grouping: BookOverviewGrouping,
+  val sortOption: BookSortOption,
+  val filterOption: BookFilterOption,
   val layoutMode: BookOverviewLayoutMode,
   val playButtonState: PlayButtonState?,
   val showAddBookHint: Boolean,
@@ -16,11 +20,16 @@ data class BookOverviewViewState(
   val searchActive: Boolean,
   val searchViewState: BookSearchViewState,
   val showStoragePermissionBugCard: Boolean,
+  val currentlyReading: BookOverviewItemViewState?,
 ) {
 
   companion object {
     val Loading = BookOverviewViewState(
       books = persistentMapOf(),
+      groupedBooks = emptyList(),
+      grouping = BookOverviewGrouping.COMPLETION_STATUS,
+      sortOption = BookSortOption.ALPHABETICAL,
+      filterOption = BookFilterOption.ALL,
       layoutMode = BookOverviewLayoutMode.List,
       playButtonState = null,
       showAddBookHint = false,
@@ -33,6 +42,7 @@ data class BookOverviewViewState(
         query = "",
       ),
       showStoragePermissionBugCard = false,
+      currentlyReading = null,
     )
   }
 

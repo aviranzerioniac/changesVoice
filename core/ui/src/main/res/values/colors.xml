@@ -1,6 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="dynamic_primary40">@color/m3_sys_color_light_primary</color>
+  <!-- Light Mode - Primary Blue -->
+  <color name="primary_blue_5">#F3F1FE</color>
+  <color name="primary_blue_10">#DDD7FC</color>
+  <color name="primary_blue_20">#BBB1FA</color>
+  <color name="primary_blue_30">#9487F1</color>
+  <color name="primary_blue_40">#7466E3</color>
+  <color name="primary_blue_50">#4838D1</color>
+  <color name="primary_blue_60">#3528B3</color>
+  <color name="primary_blue_70">#261C96</color>
+  <color name="primary_blue_80">#191179</color>
+  <color name="primary_blue_90">#100A64</color>
+  <color name="primary_blue_100">#090638</color>
+
+  <!-- Light Mode - Neutral Gray -->
+  <color name="neutral_gray_5">#F5F5FA</color>
+  <color name="neutral_gray_10">#EBEBF5</color>
+  <color name="neutral_gray_20">#D5D5E3</color>
+  <color name="neutral_gray_30">#B8B8C7</color>
+  <color name="neutral_gray_40">#B8B8C7</color>
+  <color name="neutral_gray_50">#9292A2</color>
+  <color name="neutral_gray_60">#6A6A8B</color>
+  <color name="neutral_gray_70">#494974</color>
+  <color name="neutral_gray_80">#2E2E5D</color>
+  <color name="neutral_gray_90">#1C1C4D</color>
+  <color name="neutral_gray_100">#0F0F29</color>
+  <color name="neutral_black">#010104</color>
+  <color name="neutral_white">#FFFFFF</color>
+
+  <!-- Light Mode - Accent Orange -->
+  <color name="accent_orange_5">#FFFAF5</color>
+  <color name="accent_orange_10">#FEEEDD</color>
+  <color name="accent_orange_20">#FED9BB</color>
+  <color name="accent_orange_30">#FCBE99</color>
+  <color name="accent_orange_40">#FAA47F</color>
+  <color name="accent_orange_50">#F77A55</color>
+  <color name="accent_orange_60">#D4553E</color>
+  <color name="accent_orange_70">#B1362A</color>
+  <color name="accent_orange_80">#8F1C1B</color>
+  <color name="accent_orange_90">#761016</color>
+  <color name="accent_orange_100">#480A0D</color>
+
+  <!-- Dark Mode - Surfaces -->
+  <color name="surface_main">#0F0F1D</color>
+  <color name="surface_secondary">#1A1A2E</color>
+  <color name="surface_tertiary">#252541</color>
+
+  <!-- Dark Mode - Primary Blue (Bright) -->
+  <color name="primary_blue_bright_5">#1A1628</color>
+  <color name="primary_blue_bright_10">#2A1F52</color>
+  <color name="primary_blue_bright_20">#3A2E7A</color>
+  <color name="primary_blue_bright_30">#4A3D9C</color>
+  <color name="primary_blue_bright_40">#5A4CB8</color>
+  <color name="primary_blue_bright_50">#6B5AE8</color>
+  <color name="primary_blue_bright_60">#7B6AF0</color>
+  <color name="primary_blue_bright_70">#8B7AF8</color>
+  <color name="primary_blue_bright_80">#9B8AFF</color>
+  <color name="primary_blue_bright_90">#AB9AFF</color>
+  <color name="primary_blue_bright_100">#BBAAFF</color>
+
+  <!-- Dark Mode - Text Colors -->
+  <color name="text_primary_dark">#FFFFFF</color>
+  <color name="text_secondary_dark">#B8B8C7</color>
+  <color name="text_tertiary_dark">#9292A2</color>
+  <color name="text_inverse_dark">#0F0F29</color>
+
+  <!-- Dark Mode - Accent Orange (Bright) -->
+  <color name="accent_orange_bright_40">#FFB199</color>
+  <color name="accent_orange_bright_50">#FF9975</color>
+  <color name="accent_orange_bright_60">#FF8860</color>
+
+  <!-- Dark Mode - Neutral Inverted -->
+  <color name="neutral_inverted_5">#1A1A2E</color>
+  <color name="neutral_inverted_10">#242436</color>
+  <color name="neutral_inverted_20">#2E2E48</color>
+  <color name="neutral_inverted_30">#3A3A58</color>
+  <color name="neutral_inverted_40">#464668</color>
+  <color name="neutral_inverted_50">#5A5A7E</color>
+  <color name="neutral_inverted_60">#6E6E96</color>
+  <color name="neutral_inverted_80">#D5D5E3</color>
+  <color name="neutral_inverted_100">#FFFFFF</color>
+
+  <!-- Legacy colors for compatibility -->
+  <color name="dynamic_primary40">@color/primary_blue_50</color>
   <color name="cover_dynamic_neutral10">#1b1b1b</color>
   <color name="cover_dynamic_neutral30">#464646</color>
   <color name="cover_dynamic_neutral40">#5e5e5e</color>

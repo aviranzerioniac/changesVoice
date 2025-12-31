@@ -81,6 +81,12 @@ private fun Settings(
     },
   ) { contentPadding ->
     LazyColumn(contentPadding = contentPadding) {
+      item {
+        ThemeRow(
+          selectedTheme = viewState.selectedTheme,
+          onThemeClick = listener::onThemeClick,
+        )
+      }
       if (viewState.showDarkThemePref) {
         item {
           DarkThemeRow(viewState.useDarkTheme, listener::toggleDarkTheme)
@@ -280,6 +286,13 @@ private fun Dialog(
       SeekAmountDialog(
         currentSeconds = viewState.seekTimeInSeconds,
         onSecondsConfirm = listener::seekAmountChanged,
+        onDismiss = listener::dismissDialog,
+      )
+    }
+    SettingsViewState.Dialog.ThemeSelection -> {
+      ThemeSelectionDialog(
+        selectedTheme = viewState.selectedTheme,
+        onThemeSelect = listener::onThemeSelect,
         onDismiss = listener::dismissDialog,
       )
     }

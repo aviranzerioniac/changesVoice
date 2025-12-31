@@ -39,6 +39,9 @@
     </plurals>
     <string name="pref_seek_time">Skip amount</string>
     <string name="pref_theme_dark">Dark Theme</string>
+    <string name="pref_theme">Theme</string>
+    <string name="pref_theme_system">System Default</string>
+    <string name="pref_theme_light">Light</string>
     <string name="pref_auto_rewind_title">Auto rewind</string>
     <string name="pref_suggest_idea">Suggest an idea</string>
     <string name="pref_use_grid">Use grid layout</string>
@@ -53,6 +56,19 @@
     <string name="book_header_current">Current</string>
     <string name="book_header_not_started">Not started Yet</string>
     <string name="book_header_completed">Completed</string>
+    <string name="book_grouping_status">Status</string>
+    <string name="book_grouping_author">Authors</string>
+    <string name="book_grouping_series">Series</string>
+    <string name="book_grouping_folder">Folders</string>
+    <string name="book_sort_alphabetical">A-Z</string>
+    <string name="book_sort_recently_added">Recently Added</string>
+    <string name="book_sort_recently_played">Recently Played</string>
+    <string name="book_sort_duration">Duration</string>
+    <string name="book_filter_all">Show All</string>
+    <string name="book_filter_current_only">Current Only</string>
+    <string name="book_filter_not_started_only">Not Started</string>
+    <string name="book_filter_completed_only">Completed</string>
+    <string name="currently_reading">Currently Reading</string>
     <string name="close">Close</string>
     <string name="delete">Delete</string>
     <string name="add">Add</string>
