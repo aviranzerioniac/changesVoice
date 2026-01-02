@@ -1,11 +1,18 @@
 package voice.core.ui.showcase
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import voice.core.ui.VoiceCompose
 import voice.core.ui.VoiceTheme
 import voice.core.ui.components.VoiceBottomNavBar
 import voice.core.ui.components.VoiceBottomNavItem

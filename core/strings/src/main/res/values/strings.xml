@@ -42,6 +42,7 @@
     <string name="pref_theme">Theme</string>
     <string name="pref_theme_system">System Default</string>
     <string name="pref_theme_light">Light</string>
+    <string name="pref_theme_oled">OLED (Pure Black)</string>
     <string name="pref_auto_rewind_title">Auto rewind</string>
     <string name="pref_suggest_idea">Suggest an idea</string>
     <string name="pref_use_grid">Use grid layout</string>
@@ -68,6 +69,10 @@
     <string name="book_filter_current_only">Current Only</string>
     <string name="book_filter_not_started_only">Not Started</string>
     <string name="book_filter_completed_only">Completed</string>
+    <string name="library_preferences">Library Preferences</string>
+    <string name="group_by">Group by</string>
+    <string name="sort_by">Sort by</string>
+    <string name="filter">Filter</string>
     <string name="currently_reading">Currently Reading</string>
     <string name="close">Close</string>
     <string name="delete">Delete</string>
@@ -158,4 +163,35 @@
         <item quantity="other">%d minutes</item>
     </plurals>
     <string name="playback.current_chapter">Current chapter</string>
+    <string name="metadata_suggestions_title">Review Metadata Suggestions</string>
+    <string name="metadata_suggestions_subtitle">Edit or accept suggestions for this book</string>
+    <string name="metadata_suggestion_author">Author</string>
+    <string name="metadata_suggestion_title">Title</string>
+    <string name="metadata_suggestion_narrator">Narrator</string>
+    <string name="metadata_suggestion_series">Series</string>
+    <string name="metadata_suggestion_confidence">Confidence: %d%%</string>
+    <string name="metadata_suggestion_source">Source: %s</string>
+    <string name="metadata_source_filename">Filename</string>
+    <string name="metadata_source_folder">Folder Structure</string>
+    <string name="metadata_source_embedded">Embedded Tags</string>
+    <string name="metadata_source_user_input">User Input</string>
+    <string name="metadata_accept_all">Accept All</string>
+    <string name="metadata_skip">Skip</string>
+    <string name="edit_book_metadata_title">Edit Book Metadata</string>
+    <string name="book_title">Title</string>
+    <string name="book_author">Author</string>
+    <string name="book_narrator">Narrator</string>
+    <string name="book_series">Series</string>
+    <string name="book_part">Part</string>
+    <string name="book_genre">Genre</string>
+    <string name="edit_book_metadata_hint">Leave fields empty to remove values</string>
+    <string name="edit_metadata">Edit Metadata</string>
+    <string name="rescan_metadata">Rescan Metadata</string>
+    <string name="rescan_metadata_description">Re-analyze audio files and update metadata</string>
+    <string name="folder_structure_pattern">Folder Structure Pattern</string>
+    <string name="folder_structure_pattern_description">How your audiobooks are organized in folders</string>
+    <string name="folder_pattern_author_book">Author / Book</string>
+    <string name="folder_pattern_series_book">Series / Book</string>
+    <string name="folder_pattern_author_series_book">Author / Series / Book</string>
+    <string name="folder_pattern_book_only">Book Only</string>
 </resources>

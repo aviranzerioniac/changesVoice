@@ -22,8 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import voice.core.ui.VoiceCompose
 import voice.core.ui.VoiceCompose.Spacing
@@ -56,20 +58,21 @@ internal fun CurrentlyReadingSection(
           .clip(MaterialTheme.shapes.medium)
           .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
       ) {
-        if (book.cover != null) {
-          AsyncImage(
-            model = book.cover,
-            contentDescription = "Book cover",
-            modifier = Modifier.size(76.dp),
-            contentScale = ContentScale.Crop,
-          )
-        }
+        AsyncImage(
+          model = book.cover?.file,
+          contentDescription = "Book cover",
+          modifier = Modifier.size(76.dp),
+          contentScale = ContentScale.Crop,
+          placeholder = painterResource(id = voice.core.ui.R.drawable.album_art),
+          error = painterResource(id = voice.core.ui.R.drawable.album_art),
+        )
         Box(
           modifier = Modifier
-            .align(Alignment.Center)
-            .size(32.dp)
+            .align(Alignment.BottomEnd)
+            .padding(4.dp)
+            .size(24.dp)
             .background(
-              MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+              MaterialTheme.colorScheme.primary.copy(alpha = 0.95f),
               CircleShape,
             ),
           contentAlignment = Alignment.Center,
@@ -78,7 +81,7 @@ internal fun CurrentlyReadingSection(
             imageVector = Icons.Default.PlayArrow,
             contentDescription = "Playing",
             tint = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(16.dp),
           )
         }
       }
@@ -113,7 +116,7 @@ internal fun CurrentlyReadingSection(
         }
         Spacer(modifier = Modifier.size(4.dp))
         Text(
-          text = "${book.progress}% • ${book.timeLeft}",
+          text = "${(book.progress * 100).toInt()}% • ${book.remainingTime}",
           style = MaterialTheme.typography.labelSmall,
           color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
         )

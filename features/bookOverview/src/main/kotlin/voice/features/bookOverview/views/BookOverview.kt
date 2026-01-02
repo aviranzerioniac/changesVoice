@@ -41,6 +41,7 @@ import voice.features.bookOverview.bottomSheet.BottomSheetContent
 import voice.features.bookOverview.bottomSheet.BottomSheetItem
 import voice.features.bookOverview.deleteBook.DeleteBookDialog
 import voice.features.bookOverview.di.BookOverviewGraph
+import voice.features.bookOverview.editMetadata.EditBookMetadataDialog
 import voice.features.bookOverview.editTitle.EditBookTitleDialog
 import voice.features.bookOverview.overview.BookFilterOption
 import voice.features.bookOverview.overview.BookOverviewCategory
@@ -49,11 +50,6 @@ import voice.features.bookOverview.overview.BookOverviewItemViewState
 import voice.features.bookOverview.overview.BookOverviewLayoutMode
 import voice.features.bookOverview.overview.BookOverviewViewState
 import voice.features.bookOverview.overview.BookSortOption
-import voice.features.bookOverview.overview.CategorySelector
-import voice.features.bookOverview.overview.CurrentlyReadingSection
-import voice.features.bookOverview.overview.FilterSelector
-import voice.features.bookOverview.overview.GroupedBooksList
-import voice.features.bookOverview.overview.SortSelector
 import voice.features.bookOverview.search.BookSearchViewState
 import voice.features.bookOverview.views.topbar.BookOverviewTopBar
 import voice.navigation.Destination
@@ -80,6 +76,7 @@ fun BookOverviewScreen(modifier: Modifier = Modifier) {
   }
   val bookOverviewViewModel = bookGraph.bookOverviewViewModel
   val editBookTitleViewModel = bookGraph.editBookTitleViewModel
+  val editBookMetadataViewModel = bookGraph.editBookMetadataViewModel
   val bottomSheetViewModel = bookGraph.bottomSheetViewModel
   val deleteBookViewModel = bookGraph.deleteBookViewModel
   val fileCoverViewModel = bookGraph.fileCoverViewModel
@@ -118,6 +115,7 @@ fun BookOverviewScreen(modifier: Modifier = Modifier) {
     onGroupingChange = bookOverviewViewModel::onGroupingChange,
     onSortChange = bookOverviewViewModel::onSortChange,
     onFilterChange = bookOverviewViewModel::onFilterChange,
+    onLayoutModeChange = bookOverviewViewModel::onLayoutModeChange,
   )
   val deleteBookViewState = deleteBookViewModel.state.value
   if (deleteBookViewState != null) {
@@ -135,6 +133,21 @@ fun BookOverviewScreen(modifier: Modifier = Modifier) {
       onConfirmEditTitle = editBookTitleViewModel::onConfirmEditTitle,
       viewState = editBookTitleState,
       onUpdateEditTitle = editBookTitleViewModel::onUpdateEditTitle,
+    )
+  }
+  
+  val editBookMetadataState = editBookMetadataViewModel.state.value
+  if (editBookMetadataState != null) {
+    EditBookMetadataDialog(
+      onDismissClick = editBookMetadataViewModel::onDismiss,
+      onConfirmClick = editBookMetadataViewModel::onConfirm,
+      viewState = editBookMetadataState,
+      onUpdateTitle = editBookMetadataViewModel::onUpdateTitle,
+      onUpdateAuthor = editBookMetadataViewModel::onUpdateAuthor,
+      onUpdateNarrator = editBookMetadataViewModel::onUpdateNarrator,
+      onUpdateSeries = editBookMetadataViewModel::onUpdateSeries,
+      onUpdatePart = editBookMetadataViewModel::onUpdatePart,
+      onUpdateGenre = editBookMetadataViewModel::onUpdateGenre,
     )
   }
 
@@ -180,6 +193,7 @@ internal fun BookOverview(
   onGroupingChange: (BookOverviewGrouping) -> Unit,
   onSortChange: (BookSortOption) -> Unit,
   onFilterChange: (BookFilterOption) -> Unit,
+  onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -193,6 +207,10 @@ internal fun BookOverview(
         onActiveChange = onSearchActiveChange,
         onQueryChange = onSearchQueryChange,
         onSearchBookClick = onSearchBookClick,
+        onGroupingChange = onGroupingChange,
+        onSortChange = onSortChange,
+        onFilterChange = onFilterChange,
+        onLayoutModeChange = onLayoutModeChange,
       )
     },
     floatingActionButton = {
@@ -214,31 +232,14 @@ internal fun BookOverview(
         .consumeWindowInsets(contentPadding),
     ) {
       Column {
-        if (!viewState.searchActive && viewState.books.isNotEmpty()) {
-          // Currently reading section at the top
+        // Currently reading section at the top (only when not searching)
+        if (!viewState.searchActive) {
           viewState.currentlyReading?.let { currentBook ->
             CurrentlyReadingSection(
               book = currentBook,
               onBookClick = { onBookClick(currentBook.id) },
             )
           }
-
-          // Category selector
-          CategorySelector(
-            selectedGrouping = viewState.grouping,
-            onGroupingChange = onGroupingChange,
-          )
-
-          // Sort and filter selectors
-          SortSelector(
-            selectedSort = viewState.sortOption,
-            onSortChange = onSortChange,
-          )
-
-          FilterSelector(
-            selectedFilter = viewState.filterOption,
-            onFilterChange = onFilterChange,
-          )
         }
         
         when {
@@ -270,8 +271,8 @@ internal fun BookOverview(
               groupedBooks = viewState.groupedBooks,
               grouping = viewState.grouping,
               layoutMode = viewState.layoutMode,
-              onBookClick = { onBookClick(it.id) },
-              onBookLongClick = { onBookLongClick(it.id) },
+              onBookClick = onBookClick,
+              onBookLongClick = onBookLongClick,
               currentlyReading = viewState.currentlyReading,
             )
           }
@@ -303,6 +304,7 @@ fun BookOverviewPreview(
       onGroupingChange = {},
       onSortChange = {},
       onFilterChange = {},
+      onLayoutModeChange = {},
     )
   }
 }

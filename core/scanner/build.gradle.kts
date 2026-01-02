@@ -10,6 +10,7 @@ kotlin {
 dependencies {
   implementation(projects.core.data.api)
   implementation(projects.core.initializer)
+  api(projects.core.metadata.suggester)
 
   implementation(libs.slf4j.noop)
   implementation(libs.jebml)

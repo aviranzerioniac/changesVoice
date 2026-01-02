@@ -3,7 +3,7 @@ package voice.features.bookOverview.overview
 import voice.core.data.Book
 import java.io.File
 
-internal data class GroupedBooks(
+data class GroupedBooks(
   val groupName: String,
   val books: Map<BookOverviewCategory, List<BookOverviewItemViewState>>,
 )
@@ -53,8 +53,8 @@ internal fun List<Book>.groupByStrategy(
     }
     BookOverviewGrouping.FOLDER -> {
       filteredBooks
-        .groupBy { 
-          it.chapters.firstOrNull()?.file?.parent?.let { File(it).name } ?: "Unknown Folder"
+        .groupBy {
+          it.content.cover?.parentFile?.name ?: "Unknown Folder"
         }
         .map { (folder, books) ->
           GroupedBooks(

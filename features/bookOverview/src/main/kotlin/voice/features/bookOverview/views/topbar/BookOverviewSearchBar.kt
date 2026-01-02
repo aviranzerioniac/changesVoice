@@ -10,6 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import voice.core.data.BookId
+import voice.features.bookOverview.overview.BookFilterOption
+import voice.features.bookOverview.overview.BookOverviewGrouping
+import voice.features.bookOverview.overview.BookOverviewLayoutMode
+import voice.features.bookOverview.overview.BookSortOption
 import voice.features.bookOverview.search.BookSearchContent
 import voice.features.bookOverview.search.BookSearchViewState
 
@@ -24,6 +28,14 @@ internal fun ColumnScope.BookOverviewSearchBar(
   searchActive: Boolean,
   showAddBookHint: Boolean,
   searchViewState: BookSearchViewState,
+  grouping: BookOverviewGrouping,
+  sortOption: BookSortOption,
+  filterOption: BookFilterOption,
+  layoutMode: BookOverviewLayoutMode,
+  onGroupingChange: (BookOverviewGrouping) -> Unit,
+  onSortChange: (BookSortOption) -> Unit,
+  onFilterChange: (BookFilterOption) -> Unit,
+  onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
 ) {
   SearchBar(
     inputField = {
@@ -49,6 +61,14 @@ internal fun ColumnScope.BookOverviewSearchBar(
             showAddBookHint = showAddBookHint,
             onBookFolderClick = onBookFolderClick,
             onSettingsClick = onSettingsClick,
+            grouping = grouping,
+            sortOption = sortOption,
+            filterOption = filterOption,
+            layoutMode = layoutMode,
+            onGroupingChange = onGroupingChange,
+            onSortChange = onSortChange,
+            onFilterChange = onFilterChange,
+            onLayoutModeChange = onLayoutModeChange,
           )
         },
       )

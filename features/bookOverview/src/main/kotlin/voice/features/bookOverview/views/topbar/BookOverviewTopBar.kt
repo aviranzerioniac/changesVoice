@@ -18,8 +18,11 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.delay
 import voice.core.data.BookId
 import voice.core.ui.VoiceTheme
+import voice.features.bookOverview.overview.BookFilterOption
 import voice.features.bookOverview.overview.BookOverviewLayoutMode
 import voice.features.bookOverview.overview.BookOverviewViewState
+import voice.features.bookOverview.overview.BookOverviewGrouping
+import voice.features.bookOverview.overview.BookSortOption
 import voice.features.bookOverview.search.BookSearchViewState
 import kotlin.time.Duration.Companion.seconds
 
@@ -31,6 +34,10 @@ internal fun BookOverviewTopBar(
   onActiveChange: (Boolean) -> Unit,
   onQueryChange: (String) -> Unit,
   onSearchBookClick: (BookId) -> Unit,
+  onGroupingChange: (BookOverviewGrouping) -> Unit,
+  onSortChange: (BookSortOption) -> Unit,
+  onFilterChange: (BookFilterOption) -> Unit,
+  onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
 ) {
   Column {
     val horizontalPadding by animateDpAsState(
@@ -47,6 +54,14 @@ internal fun BookOverviewTopBar(
       searchActive = viewState.searchActive,
       showAddBookHint = viewState.showAddBookHint,
       searchViewState = viewState.searchViewState,
+      grouping = viewState.grouping,
+      sortOption = viewState.sortOption,
+      filterOption = viewState.filterOption,
+      layoutMode = viewState.layoutMode,
+      onGroupingChange = onGroupingChange,
+      onSortChange = onSortChange,
+      onFilterChange = onFilterChange,
+      onLayoutModeChange = onLayoutModeChange,
     )
     var showLoading by remember { mutableStateOf(true) }
     LaunchedEffect(viewState.isLoading) {
@@ -72,6 +87,10 @@ private fun BookOverviewTopBarPreview() {
     BookOverviewTopBar(
       viewState = BookOverviewViewState(
         books = persistentMapOf(),
+        groupedBooks = emptyList(),
+        grouping = BookOverviewGrouping.COMPLETION_STATUS,
+        sortOption = BookSortOption.ALPHABETICAL,
+        filterOption = BookFilterOption.ALL,
         layoutMode = BookOverviewLayoutMode.List,
         playButtonState = BookOverviewViewState.PlayButtonState.Paused,
         showAddBookHint = true,
@@ -84,12 +103,16 @@ private fun BookOverviewTopBarPreview() {
           query = "",
         ),
         showStoragePermissionBugCard = false,
+        currentlyReading = null,
       ),
       onBookFolderClick = {},
       onSettingsClick = {},
       onActiveChange = {},
       onQueryChange = {},
       onSearchBookClick = {},
+      onGroupingChange = {},
+      onSortChange = {},
+      onFilterChange = {},
     )
   }
 }

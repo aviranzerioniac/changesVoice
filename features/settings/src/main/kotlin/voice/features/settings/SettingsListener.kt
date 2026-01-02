@@ -1,12 +1,13 @@
 package voice.features.settings
 
 import java.time.LocalTime
+import voice.core.data.ThemeOption
 
 interface SettingsListener {
   fun close()
   fun toggleDarkTheme()
   fun onThemeClick()
-  fun onThemeSelect(theme: voice.core.data.ThemeOption)
+  fun onThemeSelect(theme: ThemeOption)
   fun toggleGrid()
   fun seekAmountChanged(seconds: Int)
   fun onSeekAmountRowClick()
@@ -28,7 +29,7 @@ interface SettingsListener {
       override fun close() {}
       override fun toggleDarkTheme() {}
       override fun onThemeClick() {}
-      override fun onThemeSelect(theme: voice.core.data.ThemeOption) {}
+      override fun onThemeSelect(theme: ThemeOption) {}
       override fun toggleGrid() {}
       override fun seekAmountChanged(seconds: Int) {}
       override fun onSeekAmountRowClick() {}

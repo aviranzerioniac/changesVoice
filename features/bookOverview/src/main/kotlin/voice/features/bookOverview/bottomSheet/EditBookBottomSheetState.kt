@@ -5,9 +5,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.NotStarted
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Title
 import androidx.compose.ui.graphics.vector.ImageVector
 import voice.core.strings.R as StringsR
@@ -19,6 +21,8 @@ enum class BottomSheetItem(
   val icon: ImageVector,
 ) {
   Title(StringsR.string.change_book_name, Icons.Outlined.Title),
+  EditMetadata(StringsR.string.edit_metadata, Icons.Outlined.Edit),
+  RescanMetadata(StringsR.string.rescan_metadata, Icons.Outlined.Refresh),
   InternetCover(StringsR.string.download_book_cover, Icons.Outlined.Download),
   FileCover(StringsR.string.pick_book_cover, Icons.Outlined.Image),
   DeleteBook(StringsR.string.delete_book_bottom_sheet_title, Icons.Outlined.Delete),

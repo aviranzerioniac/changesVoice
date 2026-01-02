@@ -12,7 +12,10 @@ dependencies {
   implementation(projects.core.strings)
   implementation(projects.core.playback)
   implementation(projects.core.data.api)
+  implementation(projects.core.data.impl)
   implementation(projects.core.scanner)
+  implementation(projects.core.documentfile)
+  implementation(projects.core.metadata.suggester)
 
   implementation(libs.lifecycle)
   api(libs.immutable)

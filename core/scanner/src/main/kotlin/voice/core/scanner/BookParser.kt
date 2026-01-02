@@ -12,6 +12,7 @@ import voice.core.data.toUri
 import voice.core.documentfile.CachedDocumentFile
 import voice.core.documentfile.CachedDocumentFileFactory
 import voice.core.logging.api.Logger
+import voice.core.metadata.suggester.MetadataSuggester
 import java.time.Instant
 
 @Inject
@@ -19,6 +20,7 @@ internal class BookParser(
   private val contentRepo: BookContentRepo,
   private val mediaAnalyzer: MediaAnalyzer,
   private val fileFactory: CachedDocumentFileFactory,
+  private val metadataSuggester: MetadataSuggester,
 ) {
 
   suspend fun parseAndStore(
@@ -29,15 +31,31 @@ internal class BookParser(
     return contentRepo.getOrPut(id) {
       val uri = chapters.first().id.toUri()
       val analyzed = mediaAnalyzer.analyze(fileFactory.create(uri))
+      
+      // Get metadata suggestions based on filename and folder structure
+      val suggestions = metadataSuggester.suggestMetadata(
+        file = file,
+        existingAuthor = analyzed?.artist,
+        existingTitle = analyzed?.title,
+        existingSeries = analyzed?.series,
+      )
+      
+      // Use the best suggestion or fallback to analyzed/filename
+      val bestAuthor = suggestions.authors.firstOrNull()?.value ?: analyzed?.artist
+      val bestTitle = suggestions.titles.firstOrNull()?.value 
+        ?: analyzed?.album 
+        ?: analyzed?.title 
+        ?: file.bookName()
+      
+      Logger.d("Metadata suggestions for ${file.name}: author=$bestAuthor, title=$bestTitle")
+      
       BookContent(
         id = id,
         isActive = true,
         addedAt = Instant.now(),
-        author = analyzed?.artist,
+        author = bestAuthor,
         lastPlayedAt = Instant.EPOCH,
-        name = analyzed?.album
-          ?: analyzed?.title
-          ?: file.bookName(),
+        name = bestTitle,
         playbackSpeed = 1F,
         skipSilence = false,
         chapters = chapters.map { it.id },
@@ -46,9 +64,9 @@ internal class BookParser(
         cover = null,
         gain = 0F,
         genre = analyzed?.genre,
-        narrator = analyzed?.narrator,
-        series = analyzed?.series,
-        part = analyzed?.part,
+        narrator = suggestions.narrators.firstOrNull()?.value ?: analyzed?.narrator,
+        series = suggestions.series.firstOrNull()?.seriesName ?: analyzed?.series,
+        part = suggestions.series.firstOrNull()?.part ?: analyzed?.part,
       ).also {
         validateIntegrity(it, chapters)
       }

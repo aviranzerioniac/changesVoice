@@ -55,7 +55,9 @@ class SettingsViewModel(
   private val dialog = mutableStateOf<SettingsViewState.Dialog?>(null)
 
   @Composable
-  fun viselectedTheme by remember { themeStore.data }.collectAsState(initial = ThemeOption.SYSTEM)
+  fun viewState(): SettingsViewState {
+    val useDarkTheme by remember { useDarkThemeStore.data }.collectAsState(initial = false)
+    val selectedTheme by remember { themeStore.data }.collectAsState(initial = ThemeOption.SYSTEM)
     val autoRewindAmount by remember { autoRewindAmountStore.data }.collectAsState(initial = 0)
     val seekTime by remember { seekTimeStore.data }.collectAsState(initial = 0)
     val gridMode by remember { gridModeStore.data }.collectAsState(initial = GridMode.GRID)
@@ -63,12 +65,11 @@ class SettingsViewModel(
       initial = SleepTimerPreference.Default,
     )
     val analyticsEnabled by remember { analyticsConsentStore.data }.collectAsState(initial = false)
+
     return SettingsViewState(
       useDarkTheme = useDarkTheme,
       showDarkThemePref = DARK_THEME_SETTABLE,
-      selectedTheme = selectedTheme
-      useDarkTheme = useDarkTheme,
-      showDarkThemePref = DARK_THEME_SETTABLE,
+      selectedTheme = selectedTheme,
       seekTimeInSeconds = seekTime,
       autoRewindInSeconds = autoRewindAmount,
       dialog = dialog.value,
@@ -193,6 +194,8 @@ class SettingsViewModel(
   override fun toggleAnalytics() {
     mainScope.launch {
       analyticsConsentStore.updateData { !it }
+    }
+  }
 
   override fun onThemeClick() {
     dialog.value = SettingsViewState.Dialog.ThemeSelection
@@ -201,8 +204,6 @@ class SettingsViewModel(
   override fun onThemeSelect(theme: ThemeOption) {
     mainScope.launch {
       themeStore.updateData { theme }
-    }
-  }
     }
   }
 }

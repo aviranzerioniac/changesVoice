@@ -1,6 +1,7 @@
 package voice.features.settings.views
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Icon
@@ -18,7 +19,9 @@ internal fun ThemeRow(
   onThemeClick: () -> Unit,
 ) {
   ListItem(
-    modifier = Modifier.clickable { onThemeClick() },
+    modifier = Modifier
+      .clickable { onThemeClick() }
+      .fillMaxWidth(),
     leadingContent = {
       Icon(
         imageVector = Icons.Outlined.Palette,
@@ -33,6 +36,7 @@ internal fun ThemeRow(
         ThemeOption.SYSTEM -> stringResource(StringsR.string.pref_theme_system)
         ThemeOption.LIGHT -> stringResource(StringsR.string.pref_theme_light)
         ThemeOption.DARK -> stringResource(StringsR.string.pref_theme_dark)
+        ThemeOption.OLED -> stringResource(StringsR.string.pref_theme_oled)
       }
       Text(themeText)
     },

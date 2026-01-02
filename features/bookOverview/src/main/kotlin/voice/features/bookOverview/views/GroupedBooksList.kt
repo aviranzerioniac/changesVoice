@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import kotlinx.collections.immutable.persistentMapOf
+import voice.core.data.BookId
 import voice.core.ui.VoiceCompose
 import voice.core.ui.VoiceCompose.Spacing
 import voice.features.bookOverview.overview.BookOverviewCategory
@@ -36,14 +38,14 @@ internal fun GroupedBooksList(
   groupedBooks: List<GroupedBooks>,
   grouping: BookOverviewGrouping,
   layoutMode: BookOverviewLayoutMode,
-  onBookClick: (BookOverviewItemViewState) -> Unit,
-  onBookLongClick: (BookOverviewItemViewState) -> Unit,
+  onBookClick: (BookId) -> Unit,
+  onBookLongClick: (BookId) -> Unit,
   currentlyReading: BookOverviewItemViewState?,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier) {
     groupedBooks.forEach { group ->
-      var expanded by remember { mutableStateOf(true) }
+      var expanded by remember(group.groupName, grouping) { mutableStateOf(true) }
       
       if (grouping != BookOverviewGrouping.COMPLETION_STATUS) {
         GroupHeader(
@@ -115,35 +117,34 @@ private fun CategorySection(
   category: BookOverviewCategory,
   books: List<BookOverviewItemViewState>,
   layoutMode: BookOverviewLayoutMode,
-  onBookClick: (BookOverviewItemViewState) -> Unit,
-  onBookLongClick: (BookOverviewItemViewState) -> Unit,
+  onBookClick: (BookId) -> Unit,
+  onBookLongClick: (BookId) -> Unit,
   currentlyReading: BookOverviewItemViewState?,
   showCategoryHeader: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier) {
     if (showCategoryHeader) {
-      Header(
-        title = stringResource(category.nameRes),
-        bookCount = books.size,
-      )
+      Header(category = category)
     }
     
     when (layoutMode) {
       BookOverviewLayoutMode.List -> {
         ListBooks(
-          books = books,
-          onBookClick = onBookClick,
-          onBookLongClick = onBookLongClick,
-          currentBookId = currentlyReading?.id,
+          books = persistentMapOf(category to books),
+          onBookClick = { onBookClick(it) },
+          onBookLongClick = { onBookLongClick(it) },
+          showPermissionBugCard = false,
+          onPermissionBugCardClick = {},
         )
       }
       BookOverviewLayoutMode.Grid -> {
         GridBooks(
-          books = books,
-          onBookClick = onBookClick,
-          onBookLongClick = onBookLongClick,
-          currentBookId = currentlyReading?.id,
+          books = persistentMapOf(category to books),
+          onBookClick = { onBookClick(it) },
+          onBookLongClick = { onBookLongClick(it) },
+          showPermissionBugCard = false,
+          onPermissionBugCardClick = {},
         )
       }
     }

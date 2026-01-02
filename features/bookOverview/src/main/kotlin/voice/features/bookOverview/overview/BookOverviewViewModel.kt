@@ -247,6 +247,17 @@ class BookOverviewViewModel(
     }
   }
 
+  fun onLayoutModeChange(layoutMode: BookOverviewLayoutMode) {
+    scope.launch {
+      gridModeStore.updateData {
+        when (layoutMode) {
+          BookOverviewLayoutMode.Grid -> GridMode.GRID
+          BookOverviewLayoutMode.List -> GridMode.LIST
+        }
+      }
+    }
+  }
+
   fun onPermissionBugCardClick() {
     if (Build.VERSION.SDK_INT >= 30) {
       navigator.goTo(

@@ -11,12 +11,12 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 
 @Inject
-internal class VoiceDataStoreFactory(
+public class VoiceDataStoreFactory(
   private val json: Json,
   private val context: Application,
 ) {
 
-  fun <T> create(
+  public fun <T> create(
     serializer: KSerializer<T>,
     defaultValue: T,
     fileName: String,
@@ -34,7 +34,7 @@ internal class VoiceDataStoreFactory(
     }
   }
 
-  fun int(
+  public fun int(
     fileName: String,
     defaultValue: Int,
     migrations: List<DataMigration<Int>> = emptyList(),
@@ -47,7 +47,7 @@ internal class VoiceDataStoreFactory(
     )
   }
 
-  fun boolean(
+  public fun boolean(
     fileName: String,
     defaultValue: Boolean,
     migrations: List<DataMigration<Boolean>> = emptyList(),
@@ -55,6 +55,18 @@ internal class VoiceDataStoreFactory(
     return create(
       serializer = Boolean.serializer(),
       defaultValue = defaultValue,
+      fileName = fileName,
+      migrations = migrations,
+    )
+  }
+
+  public fun createSet(
+    fileName: String,
+    migrations: List<DataMigration<Set<String>>> = emptyList(),
+  ): DataStore<Set<String>> {
+    return create(
+      serializer = kotlinx.serialization.builtins.SetSerializer(String.serializer()),
+      defaultValue = emptySet(),
       fileName = fileName,
       migrations = migrations,
     )

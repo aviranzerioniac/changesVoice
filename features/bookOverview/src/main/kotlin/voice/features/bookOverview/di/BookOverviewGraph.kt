@@ -7,13 +7,21 @@ import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.Scope
 import dev.zacsweers.metro.SingleIn
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.Serializable
 import voice.core.data.store.VoiceDataStoreFactory
 import voice.features.bookOverview.bottomSheet.BottomSheetViewModel
 import voice.features.bookOverview.deleteBook.DeleteBookViewModel
+import voice.features.bookOverview.editMetadata.EditBookMetadataViewModel
 import voice.features.bookOverview.editTitle.EditBookTitleViewModel
 import voice.features.bookOverview.fileCover.FileCoverViewModel
 import voice.features.bookOverview.overview.BookFilterStore
+import voice.features.bookOverview.overview.BookGroupExpansionStore
 import voice.features.bookOverview.overview.BookGroupingStore
 import voice.features.bookOverview.overview.BookOverviewGrouping
 import voice.features.bookOverview.overview.BookOverviewViewModel
@@ -29,6 +37,7 @@ annotation class BookOverviewScope
 interface BookOverviewGraph {
   val bookOverviewViewModel: BookOverviewViewModel
   val editBookTitleViewModel: EditBookTitleViewModel
+  val editBookMetadataViewModel: EditBookMetadataViewModel
   val bottomSheetViewModel: BottomSheetViewModel
   val deleteBookViewModel: DeleteBookViewModel
   val fileCoverViewModel: FileCoverViewModel
@@ -71,6 +80,15 @@ interface BookOverviewGraph {
       )
     }
 
+    @Provides
+    @SingleIn(AppScope::class)
+    @BookGroupExpansionStore
+    fun bookGroupExpansionStore(factory: VoiceDataStoreFactory): DataStore<Set<String>> {
+      return factory.createSet(
+        fileName = "BookGroupExpansion",
+      )
+    }
+
     @ContributesTo(AppScope::class)
     interface Provider {
       val bookOverviewGraphProviderFactory: Factory
@@ -78,89 +96,77 @@ interface BookOverviewGraph {
   }
 }
 
-@Serializable
-private enum class BookOverviewGroupingSerializable {
-  COMPLETION_STATUS,
-  AUTHOR,
-  SERIES,
-  FOLDER,
+private object BookOverviewGroupingSerializer : KSerializer<BookOverviewGrouping> {
+  override val descriptor: SerialDescriptor =
+    PrimitiveSerialDescriptor("BookOverviewGrouping", PrimitiveKind.STRING)
+
+  override fun deserialize(decoder: Decoder): BookOverviewGrouping {
+    return when (decoder.decodeString()) {
+      "COMPLETION_STATUS" -> BookOverviewGrouping.COMPLETION_STATUS
+      "AUTHOR" -> BookOverviewGrouping.AUTHOR
+      "SERIES" -> BookOverviewGrouping.SERIES
+      "FOLDER" -> BookOverviewGrouping.FOLDER
+      else -> BookOverviewGrouping.COMPLETION_STATUS
+    }
+  }
+
+  override fun serialize(encoder: Encoder, value: BookOverviewGrouping) {
+    val serialized = when (value) {
+      BookOverviewGrouping.COMPLETION_STATUS -> "COMPLETION_STATUS"
+      BookOverviewGrouping.AUTHOR -> "AUTHOR"
+      BookOverviewGrouping.SERIES -> "SERIES"
+      BookOverviewGrouping.FOLDER -> "FOLDER"
+    }
+    encoder.encodeString(serialized)
+  }
 }
 
-private object BookOverviewGroupingSerializer :
-  voice.core.common.serialization.EnumSerializer<BookOverviewGrouping, BookOverviewGroupingSerializable>(
-    values = BookOverviewGrouping.entries.toTypedArray(),
-    serialize = { value ->
-      when (value) {
-        BookOverviewGrouping.COMPLETION_STATUS -> BookOverviewGroupingSerializable.COMPLETION_STATUS
-        BookOverviewGrouping.AUTHOR -> BookOverviewGroupingSerializable.AUTHOR
-        BookOverviewGrouping.SERIES -> BookOverviewGroupingSerializable.SERIES
-        BookOverviewGrouping.FOLDER -> BookOverviewGroupingSerializable.FOLDER
-      }
-    },
-    deserialize = { serialized ->
-      when (serialized) {
-        BookOverviewGroupingSerializable.COMPLETION_STATUS -> BookOverviewGrouping.COMPLETION_STATUS
-        BookOverviewGroupingSerializable.AUTHOR -> BookOverviewGrouping.AUTHOR
-        BookOverviewGroupingSerializable.SERIES -> BookOverviewGroupingSerializable.SERIES
-        BookOverviewGroupingSerializable.FOLDER -> BookOverviewGrouping.FOLDER
-      }
-    },
-  )
+private object BookSortOptionSerializer : KSerializer<BookSortOption> {
+  override val descriptor: SerialDescriptor =
+    PrimitiveSerialDescriptor("BookSortOption", PrimitiveKind.STRING)
 
-@Serializable
-private enum class BookSortOptionSerializable {
-  ALPHABETICAL,
-  RECENTLY_ADDED,
-  RECENTLY_PLAYED,
-  DURATION,
+  override fun deserialize(decoder: Decoder): BookSortOption {
+    return when (decoder.decodeString()) {
+      "ALPHABETICAL" -> BookSortOption.ALPHABETICAL
+      "RECENTLY_ADDED" -> BookSortOption.RECENTLY_ADDED
+      "RECENTLY_PLAYED" -> BookSortOption.RECENTLY_PLAYED
+      "DURATION" -> BookSortOption.DURATION
+      else -> BookSortOption.ALPHABETICAL
+    }
+  }
+
+  override fun serialize(encoder: Encoder, value: BookSortOption) {
+    val serialized = when (value) {
+      BookSortOption.ALPHABETICAL -> "ALPHABETICAL"
+      BookSortOption.RECENTLY_ADDED -> "RECENTLY_ADDED"
+      BookSortOption.RECENTLY_PLAYED -> "RECENTLY_PLAYED"
+      BookSortOption.DURATION -> "DURATION"
+    }
+    encoder.encodeString(serialized)
+  }
 }
 
-private object BookSortOptionSerializer :
-  voice.core.common.serialization.EnumSerializer<BookSortOption, BookSortOptionSerializable>(
-    values = BookSortOption.entries.toTypedArray(),
-    serialize = { value ->
-      when (value) {
-        BookSortOption.ALPHABETICAL -> BookSortOptionSerializable.ALPHABETICAL
-        BookSortOption.RECENTLY_ADDED -> BookSortOptionSerializable.RECENTLY_ADDED
-        BookSortOption.RECENTLY_PLAYED -> BookSortOptionSerializable.RECENTLY_PLAYED
-        BookSortOption.DURATION -> BookSortOptionSerializable.DURATION
-      }
-    },
-    deserialize = { serialized ->
-      when (serialized) {
-        BookSortOptionSerializable.ALPHABETICAL -> BookSortOption.ALPHABETICAL
-        BookSortOptionSerializable.RECENTLY_ADDED -> BookSortOption.RECENTLY_ADDED
-        BookSortOptionSerializable.RECENTLY_PLAYED -> BookSortOption.RECENTLY_PLAYED
-        BookSortOptionSerializable.DURATION -> BookSortOption.DURATION
-      }
-    },
-  )
+private object BookFilterOptionSerializer : KSerializer<BookFilterOption> {
+  override val descriptor: SerialDescriptor =
+    PrimitiveSerialDescriptor("BookFilterOption", PrimitiveKind.STRING)
 
-@Serializable
-private enum class BookFilterOptionSerializable {
-  ALL,
-  CURRENT_ONLY,
-  NOT_STARTED_ONLY,
-  COMPLETED_ONLY,
+  override fun deserialize(decoder: Decoder): BookFilterOption {
+    return when (decoder.decodeString()) {
+      "ALL" -> BookFilterOption.ALL
+      "CURRENT_ONLY" -> BookFilterOption.CURRENT_ONLY
+      "NOT_STARTED_ONLY" -> BookFilterOption.NOT_STARTED_ONLY
+      "COMPLETED_ONLY" -> BookFilterOption.COMPLETED_ONLY
+      else -> BookFilterOption.ALL
+    }
+  }
+
+  override fun serialize(encoder: Encoder, value: BookFilterOption) {
+    val serialized = when (value) {
+      BookFilterOption.ALL -> "ALL"
+      BookFilterOption.CURRENT_ONLY -> "CURRENT_ONLY"
+      BookFilterOption.NOT_STARTED_ONLY -> "NOT_STARTED_ONLY"
+      BookFilterOption.COMPLETED_ONLY -> "COMPLETED_ONLY"
+    }
+    encoder.encodeString(serialized)
+  }
 }
-
-private object BookFilterOptionSerializer :
-  voice.core.common.serialization.EnumSerializer<BookFilterOption, BookFilterOptionSerializable>(
-    values = BookFilterOption.entries.toTypedArray(),
-    serialize = { value ->
-      when (value) {
-        BookFilterOption.ALL -> BookFilterOptionSerializable.ALL
-        BookFilterOption.CURRENT_ONLY -> BookFilterOptionSerializable.CURRENT_ONLY
-        BookFilterOption.NOT_STARTED_ONLY -> BookFilterOptionSerializable.NOT_STARTED_ONLY
-        BookFilterOption.COMPLETED_ONLY -> BookFilterOptionSerializable.COMPLETED_ONLY
-      }
-    },
-    deserialize = { serialized ->
-      when (serialized) {
-        BookFilterOptionSerializable.ALL -> BookFilterOption.ALL
-        BookFilterOptionSerializable.CURRENT_ONLY -> BookFilterOption.CURRENT_ONLY
-        BookFilterOptionSerializable.NOT_STARTED_ONLY -> BookFilterOption.NOT_STARTED_ONLY
-        BookFilterOptionSerializable.COMPLETED_ONLY -> BookFilterOption.COMPLETED_ONLY
-      }
-    },
-  )
