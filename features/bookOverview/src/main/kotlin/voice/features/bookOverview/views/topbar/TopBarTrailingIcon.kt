@@ -34,12 +34,10 @@ internal fun ColumnScope.TopBarTrailingIcon(
   sortOption: BookSortOption,
   filterOption: BookFilterOption,
   layoutMode: BookOverviewLayoutMode,
-  folderPattern: FolderStructurePattern,
   onGroupingChange: (BookOverviewGrouping) -> Unit,
   onSortChange: (BookSortOption) -> Unit,
   onFilterChange: (BookFilterOption) -> Unit,
   onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
-  onFolderPatternChange: (FolderStructurePattern) -> Unit,
 ) {
   var showLibraryPrefsDialog by remember { mutableStateOf(false) }
   
@@ -66,12 +64,10 @@ internal fun ColumnScope.TopBarTrailingIcon(
       sortOption = sortOption,
       filterOption = filterOption,
       layoutMode = layoutMode,
-      folderPattern = folderPattern,
       onGroupingChange = onGroupingChange,
       onSortChange = onSortChange,
       onFilterChange = onFilterChange,
       onLayoutModeChange = onLayoutModeChange,
-      onFolderPatternChange = onFolderPatternChange,
       onDismiss = { showLibraryPrefsDialog = false },
     )
   }

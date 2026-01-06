@@ -53,7 +53,6 @@ internal fun GroupedBooksList(
   onBookLongClick: (BookId) -> Unit,
   currentlyReading: BookOverviewItemViewState?,
   recentlyStarted: List<BookOverviewItemViewState>,
-  expansionStore: DataStore<Set<String>>? = null,
   modifier: Modifier = Modifier,
 ) {
   val scope = rememberCoroutineScope()
@@ -75,25 +74,13 @@ internal fun GroupedBooksList(
     localExpandedGroups = (localExpandedGroups intersect currentNames) + (currentNames - localExpandedGroups)
   }
 
-  val expandedGroups = expansionStore
-    ?.data
-    ?.collectAsState(initial = initialGroupNames)
-    ?.value
-    ?: localExpandedGroups
+  val expandedGroups = localExpandedGroups
 
   fun toggleGroup(groupName: String) {
-    if (expansionStore != null) {
-      scope.launch {
-        expansionStore.updateData { current ->
-          if (current.contains(groupName)) current - groupName else current + groupName
-        }
-      }
+    localExpandedGroups = if (expandedGroups.contains(groupName)) {
+      expandedGroups - groupName
     } else {
-      localExpandedGroups = if (expandedGroups.contains(groupName)) {
-        expandedGroups - groupName
-      } else {
-        expandedGroups + groupName
-      }
+      expandedGroups + groupName
     }
   }
 

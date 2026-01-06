@@ -14,7 +14,6 @@ data class BookOverviewViewState(
   val sortOption: BookSortOption,
   val filterOption: BookFilterOption,
   val layoutMode: BookOverviewLayoutMode,
-  val folderPattern: FolderStructurePattern,
   val playButtonState: PlayButtonState?,
   val showAddBookHint: Boolean,
   val showSearchIcon: Boolean,
@@ -34,7 +33,7 @@ data class BookOverviewViewState(
       sortOption = BookSortOption.ALPHABETICAL,
       filterOption = BookFilterOption.ALL,
       layoutMode = BookOverviewLayoutMode.List,
-      folderPattern = FolderStructurePattern.AUTHOR_BOOK,
+      // folderPattern removed
       playButtonState = null,
       showAddBookHint = false,
       showSearchIcon = false,

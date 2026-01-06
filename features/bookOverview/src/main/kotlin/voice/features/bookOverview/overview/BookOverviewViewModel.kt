@@ -98,8 +98,6 @@ class BookOverviewViewModel(
       .collectAsState(initial = BookSortOption.ALPHABETICAL).value
     val filterOption = remember { bookFilterStore.data }
       .collectAsState(initial = BookFilterOption.ALL).value
-    val folderPattern = remember { folderPatternStore.data }
-      .collectAsState(initial = FolderStructurePattern.AUTHOR_BOOK).value
 
     val noBooks = !scannerActive && books.isEmpty()
 
@@ -158,7 +156,7 @@ class BookOverviewViewModel(
       grouping = grouping,
       sortOption = sortOption,
       filterOption = filterOption,
-      folderPattern = folderPattern,
+        // folderPattern removed
       playButtonState = if (playState == PlayStateManager.PlayState.Playing) {
         BookOverviewViewState.PlayButtonState.Playing
       } else {

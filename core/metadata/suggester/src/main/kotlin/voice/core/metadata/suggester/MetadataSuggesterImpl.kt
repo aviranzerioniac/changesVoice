@@ -5,7 +5,6 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import voice.core.documentfile.CachedDocumentFile
-import voice.core.metadata.suggester.learning.MetadataLearningStore
 
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
@@ -13,7 +12,6 @@ import voice.core.metadata.suggester.learning.MetadataLearningStore
 class MetadataSuggesterImpl(
   private val filenameParser: FilenameParser,
   private val folderAnalyzer: FolderStructureAnalyzer,
-  private val learningStore: MetadataLearningStore,
 ) : MetadataSuggester {
 
   override suspend fun suggestMetadata(

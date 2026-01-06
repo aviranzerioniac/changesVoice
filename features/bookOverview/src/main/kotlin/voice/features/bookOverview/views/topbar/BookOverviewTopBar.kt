@@ -38,7 +38,6 @@ internal fun BookOverviewTopBar(
   onSortChange: (BookSortOption) -> Unit,
   onFilterChange: (BookFilterOption) -> Unit,
   onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
-  onFolderPatternChange: (voice.core.metadata.suggester.FolderStructurePattern) -> Unit,
 ) {
   Column {
     val horizontalPadding by animateDpAsState(
@@ -59,12 +58,10 @@ internal fun BookOverviewTopBar(
       sortOption = viewState.sortOption,
       filterOption = viewState.filterOption,
       layoutMode = viewState.layoutMode,
-      folderPattern = viewState.folderPattern,
       onGroupingChange = onGroupingChange,
       onSortChange = onSortChange,
       onFilterChange = onFilterChange,
       onLayoutModeChange = onLayoutModeChange,
-      onFolderPatternChange = onFolderPatternChange,
     )
     var showLoading by remember { mutableStateOf(true) }
     LaunchedEffect(viewState.isLoading) {
@@ -95,7 +92,7 @@ private fun BookOverviewTopBarPreview() {
         sortOption = BookSortOption.ALPHABETICAL,
         filterOption = BookFilterOption.ALL,
         layoutMode = BookOverviewLayoutMode.List,
-        folderPattern = voice.core.metadata.suggester.FolderStructurePattern.AUTHOR_BOOK,
+        // folderPattern removed
         playButtonState = BookOverviewViewState.PlayButtonState.Paused,
         showAddBookHint = true,
         showSearchIcon = true,
@@ -119,7 +116,7 @@ private fun BookOverviewTopBarPreview() {
       onSortChange = {},
       onFilterChange = {},
       onLayoutModeChange = {},
-      onFolderPatternChange = {},
+      // onFolderPatternChange removed
     )
   }
 }

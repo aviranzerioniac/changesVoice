@@ -75,6 +75,7 @@
     <string name="library_layout_subtitle">Choose list or grid</string>
     <string name="library_layout_list">List</string>
     <string name="library_layout_grid">Grid</string>
+    <string name="library_layout_mode">Toggle layout mode</string>
     <string name="folder_structure_heading">Folder structure</string>
     <string name="folder_structure_subtitle">Match how your audiobooks are organized</string>
     <string name="book_filter_all">Show All</string>
@@ -176,20 +177,6 @@
         <item quantity="other">%d minutes</item>
     </plurals>
     <string name="playback.current_chapter">Current chapter</string>
-    <string name="metadata_suggestions_title">Review Metadata Suggestions</string>
-    <string name="metadata_suggestions_subtitle">Edit or accept suggestions for this book</string>
-    <string name="metadata_suggestion_author">Author</string>
-    <string name="metadata_suggestion_title">Title</string>
-    <string name="metadata_suggestion_narrator">Narrator</string>
-    <string name="metadata_suggestion_series">Series</string>
-    <string name="metadata_suggestion_confidence">Confidence: %d%%</string>
-    <string name="metadata_suggestion_source">Source: %s</string>
-    <string name="metadata_source_filename">Filename</string>
-    <string name="metadata_source_folder">Folder Structure</string>
-    <string name="metadata_source_embedded">Embedded Tags</string>
-    <string name="metadata_source_user_input">User Input</string>
-    <string name="metadata_accept_all">Accept All</string>
-    <string name="metadata_skip">Skip</string>
     <string name="edit_book_metadata_title">Edit Book Metadata</string>
     <string name="book_title">Title</string>
     <string name="book_author">Author</string>

@@ -117,8 +117,7 @@ fun BookOverviewScreen(modifier: Modifier = Modifier) {
     onSortChange = bookOverviewViewModel::onSortChange,
     onFilterChange = bookOverviewViewModel::onFilterChange,
     onLayoutModeChange = bookOverviewViewModel::onLayoutModeChange,
-    onFolderPatternChange = bookOverviewViewModel::onFolderPatternChange,
-    expansionStore = bookOverviewViewModel.bookGroupExpansionStore,
+    // onFolderPatternChange and expansionStore removed
   )
   val deleteBookViewState = deleteBookViewModel.state.value
   if (deleteBookViewState != null) {
@@ -197,8 +196,7 @@ internal fun BookOverview(
   onSortChange: (BookSortOption) -> Unit,
   onFilterChange: (BookFilterOption) -> Unit,
   onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
-  onFolderPatternChange: (voice.core.metadata.suggester.FolderStructurePattern) -> Unit,
-  expansionStore: DataStore<Set<String>>? = null,
+  // onFolderPatternChange and expansionStore removed
   modifier: Modifier = Modifier,
 ) {
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -216,7 +214,7 @@ internal fun BookOverview(
         onSortChange = onSortChange,
         onFilterChange = onFilterChange,
         onLayoutModeChange = onLayoutModeChange,
-        onFolderPatternChange = onFolderPatternChange,
+        // onFolderPatternChange removed
       )
     },
     floatingActionButton = {
@@ -270,7 +268,7 @@ internal fun BookOverview(
             onBookLongClick = onBookLongClick,
             currentlyReading = viewState.currentlyReading,
             recentlyStarted = viewState.recentlyStarted,
-            expansionStore = expansionStore,
+            // expansionStore removed
           )
         }
       }
@@ -301,7 +299,6 @@ fun BookOverviewPreview(
       onSortChange = {},
       onFilterChange = {},
       onLayoutModeChange = {},
-      onFolderPatternChange = {},
     )
   }
 }
@@ -330,7 +327,7 @@ internal class BookOverviewPreviewParameterProvider : PreviewParameterProvider<B
       sortOption = BookSortOption.ALPHABETICAL,
       filterOption = BookFilterOption.ALL,
       layoutMode = BookOverviewLayoutMode.List,
-      folderPattern = voice.core.metadata.suggester.FolderStructurePattern.AUTHOR_BOOK,
+      // folderPattern removed
       playButtonState = BookOverviewViewState.PlayButtonState.Paused,
       showAddBookHint = false,
       showSearchIcon = true,

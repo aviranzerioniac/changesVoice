@@ -32,12 +32,10 @@ internal fun ColumnScope.BookOverviewSearchBar(
   sortOption: BookSortOption,
   filterOption: BookFilterOption,
   layoutMode: BookOverviewLayoutMode,
-  folderPattern: voice.core.metadata.suggester.FolderStructurePattern,
   onGroupingChange: (BookOverviewGrouping) -> Unit,
   onSortChange: (BookSortOption) -> Unit,
   onFilterChange: (BookFilterOption) -> Unit,
   onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
-  onFolderPatternChange: (voice.core.metadata.suggester.FolderStructurePattern) -> Unit,
 ) {
   SearchBar(
     inputField = {
@@ -71,8 +69,6 @@ internal fun ColumnScope.BookOverviewSearchBar(
             onSortChange = onSortChange,
             onFilterChange = onFilterChange,
             onLayoutModeChange = onLayoutModeChange,
-            folderPattern = folderPattern,
-            onFolderPatternChange = onFolderPatternChange,
           )
         },
       )
