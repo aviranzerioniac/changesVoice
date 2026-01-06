@@ -17,6 +17,8 @@ import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.time.Instant
+import voice.core.data.Book
 import voice.core.common.comparator.sortedNaturally
 import voice.core.data.BookId
 import voice.core.data.GridMode
@@ -25,6 +27,8 @@ import voice.core.data.repo.BookRepository
 import voice.core.data.repo.internals.dao.RecentBookSearchDao
 import voice.core.data.store.CurrentBookStore
 import voice.core.data.store.GridModeStore
+import voice.core.metadata.suggester.FolderStructurePattern
+import voice.core.metadata.suggester.FolderStructurePatternStore
 import voice.core.playback.PlayerController
 import voice.core.playback.playstate.PlayStateManager
 import voice.core.scanner.DeviceHasStoragePermissionBug
@@ -53,6 +57,10 @@ class BookOverviewViewModel(
   private val bookSortStore: DataStore<BookSortOption>,
   @BookFilterStore
   private val bookFilterStore: DataStore<BookFilterOption>,
+  @BookGroupExpansionStore
+  internal val bookGroupExpansionStore: DataStore<Set<String>>,
+  @FolderStructurePatternStore
+  private val folderPatternStore: DataStore<FolderStructurePattern>,
   private val gridCount: GridCount,
   private val navigator: Navigator,
   private val recentBookSearchDao: RecentBookSearchDao,
@@ -85,11 +93,13 @@ class BookOverviewViewModel(
       .collectAsState(initial = null).value
       ?: return BookOverviewViewState.Loading
     val grouping = remember { bookGroupingStore.data }
-      .collectAsState(initial = BookOverviewGrouping.COMPLETION_STATUS).value
+      .collectAsState(initial = BookOverviewGrouping.AUTHOR).value
     val sortOption = remember { bookSortStore.data }
       .collectAsState(initial = BookSortOption.ALPHABETICAL).value
     val filterOption = remember { bookFilterStore.data }
       .collectAsState(initial = BookFilterOption.ALL).value
+    val folderPattern = remember { folderPatternStore.data }
+      .collectAsState(initial = FolderStructurePattern.AUTHOR_BOOK).value
 
     val noBooks = !scannerActive && books.isEmpty()
 
@@ -106,9 +116,28 @@ class BookOverviewViewModel(
     val bookSearchViewState = bookSearchViewState(layoutMode)
 
     val groupedBooks = books.groupByStrategy(grouping, sortOption, filterOption) { it.toItemViewState() }
+    
+    // Only show currently reading if the book has actually been played
     val currentlyReadingBook = currentBookId?.let { id ->
-      books.find { it.id == id }?.toItemViewState()
+      books.find { it.id == id }?.let { book ->
+        // Only show as currently reading if playback has progressed or was played.
+        if (book.position > 0 || book.content.lastPlayedAt.isAfter(Instant.EPOCH)) {
+          book.toItemViewState()
+        } else {
+          null
+        }
+      }
     }
+
+    val recentlyStarted = books
+      .filter { it.position > 0 || it.content.lastPlayedAt.isAfter(Instant.EPOCH) }
+      .filter { book -> book.id != currentlyReadingBook?.id }
+      .sortedWith(
+        compareByDescending<Book> { it.content.lastPlayedAt }
+          .thenByDescending { it.position },
+      )
+      .take(4)
+      .map { it.toItemViewState() }
 
     return BookOverviewViewState(
       layoutMode = layoutMode,
@@ -129,6 +158,7 @@ class BookOverviewViewModel(
       grouping = grouping,
       sortOption = sortOption,
       filterOption = filterOption,
+      folderPattern = folderPattern,
       playButtonState = if (playState == PlayStateManager.PlayState.Playing) {
         BookOverviewViewState.PlayButtonState.Playing
       } else {
@@ -145,6 +175,7 @@ class BookOverviewViewModel(
       searchViewState = bookSearchViewState,
       showStoragePermissionBugCard = hasStoragePermissionBug,
       currentlyReading = currentlyReadingBook,
+      recentlyStarted = recentlyStarted,
     )
   }
 
@@ -255,6 +286,12 @@ class BookOverviewViewModel(
           BookOverviewLayoutMode.List -> GridMode.LIST
         }
       }
+    }
+  }
+
+  fun onFolderPatternChange(pattern: FolderStructurePattern) {
+    scope.launch {
+      folderPatternStore.updateData { pattern }
     }
   }
 

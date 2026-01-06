@@ -27,11 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import kotlinx.collections.immutable.ImmutableMap
 import voice.core.data.BookId
 import voice.core.ui.ImmutableFile
@@ -178,7 +180,10 @@ private fun CoverImage(cover: ImmutableFile?) {
       .padding(top = 8.dp, start = 8.dp, bottom = 8.dp)
       .size(76.dp)
       .clip(RoundedCornerShape(topStart = startPadding, bottomStart = startPadding, topEnd = endPadding, bottomEnd = endPadding)),
-    model = cover?.file,
+    model = ImageRequest.Builder(LocalContext.current)
+      .data(cover?.file)
+      .crossfade(false)
+      .build(),
     placeholder = painterResource(id = UiR.drawable.album_art),
     error = painterResource(id = UiR.drawable.album_art),
     contentScale = ContentScale.Crop,

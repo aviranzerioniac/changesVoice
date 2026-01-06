@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import voice.core.metadata.suggester.FolderStructurePattern
 import voice.features.bookOverview.overview.BookFilterOption
 import voice.features.bookOverview.overview.BookOverviewGrouping
 import voice.features.bookOverview.overview.BookOverviewLayoutMode
@@ -33,10 +34,12 @@ internal fun ColumnScope.TopBarTrailingIcon(
   sortOption: BookSortOption,
   filterOption: BookFilterOption,
   layoutMode: BookOverviewLayoutMode,
+  folderPattern: FolderStructurePattern,
   onGroupingChange: (BookOverviewGrouping) -> Unit,
   onSortChange: (BookSortOption) -> Unit,
   onFilterChange: (BookFilterOption) -> Unit,
   onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
+  onFolderPatternChange: (FolderStructurePattern) -> Unit,
 ) {
   var showLibraryPrefsDialog by remember { mutableStateOf(false) }
   
@@ -60,13 +63,15 @@ internal fun ColumnScope.TopBarTrailingIcon(
   if (showLibraryPrefsDialog) {
     LibraryPreferencesDialog(
       grouping = grouping,
+      sortOption = sortOption,
+      filterOption = filterOption,
       layoutMode = layoutMode,
+      folderPattern = folderPattern,
       onGroupingChange = onGroupingChange,
       onSortChange = onSortChange,
       onFilterChange = onFilterChange,
-      onLayoutModeChange = onLayoutModepingChange,
-      onSortChange = onSortChange,
-      onFilterChange = onFilterChange,
+      onLayoutModeChange = onLayoutModeChange,
+      onFolderPatternChange = onFolderPatternChange,
       onDismiss = { showLibraryPrefsDialog = false },
     )
   }

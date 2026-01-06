@@ -13,18 +13,15 @@ import kotlinx.coroutines.launch
 import voice.core.common.AppInfoProvider
 import voice.core.common.DispatcherProvider
 import voice.core.common.MainScope
-import voice.core.data.GridMode
 import voice.core.data.ThemeOption
 import voice.core.data.sleeptimer.SleepTimerPreference
 import voice.core.data.store.AnalyticsConsentStore
 import voice.core.data.store.AutoRewindAmountStore
 import voice.core.data.store.DarkThemeStore
-import voice.core.data.store.GridModeStore
 import voice.core.data.store.SeekTimeStore
 import voice.core.data.store.SleepTimerPreferenceStore
 import voice.core.data.store.ThemeStore
 import voice.core.ui.DARK_THEME_SETTABLE
-import voice.core.ui.GridCount
 import voice.navigation.Destination
 import voice.navigation.Navigator
 import java.time.LocalTime
@@ -41,13 +38,10 @@ class SettingsViewModel(
   private val seekTimeStore: DataStore<Int>,
   private val navigator: Navigator,
   private val appInfoProvider: AppInfoProvider,
-  @GridModeStore
-  private val gridModeStore: DataStore<GridMode>,
   @SleepTimerPreferenceStore
   private val sleepTimerPreferenceStore: DataStore<SleepTimerPreference>,
   @AnalyticsConsentStore
   private val analyticsConsentStore: DataStore<Boolean>,
-  private val gridCount: GridCount,
   dispatcherProvider: DispatcherProvider,
 ) : SettingsListener {
 
@@ -60,7 +54,6 @@ class SettingsViewModel(
     val selectedTheme by remember { themeStore.data }.collectAsState(initial = ThemeOption.SYSTEM)
     val autoRewindAmount by remember { autoRewindAmountStore.data }.collectAsState(initial = 0)
     val seekTime by remember { seekTimeStore.data }.collectAsState(initial = 0)
-    val gridMode by remember { gridModeStore.data }.collectAsState(initial = GridMode.GRID)
     val autoSleepTimer by remember { sleepTimerPreferenceStore.data }.collectAsState(
       initial = SleepTimerPreference.Default,
     )
@@ -74,11 +67,6 @@ class SettingsViewModel(
       autoRewindInSeconds = autoRewindAmount,
       dialog = dialog.value,
       appVersion = appInfoProvider.versionName,
-      useGrid = when (gridMode) {
-        GridMode.LIST -> false
-        GridMode.GRID -> true
-        GridMode.FOLLOW_DEVICE -> gridCount.useGridAsDefault()
-      },
       autoSleepTimer = SettingsViewState.AutoSleepTimerViewState(
         enabled = autoSleepTimer.autoSleepTimerEnabled,
         startTime = autoSleepTimer.autoSleepStartTime,
@@ -96,22 +84,6 @@ class SettingsViewModel(
   override fun toggleDarkTheme() {
     mainScope.launch {
       useDarkThemeStore.updateData { !it }
-    }
-  }
-
-  override fun toggleGrid() {
-    mainScope.launch {
-      gridModeStore.updateData { currentMode ->
-        when (currentMode) {
-          GridMode.LIST -> GridMode.GRID
-          GridMode.GRID -> GridMode.LIST
-          GridMode.FOLLOW_DEVICE -> if (gridCount.useGridAsDefault()) {
-            GridMode.LIST
-          } else {
-            GridMode.GRID
-          }
-        }
-      }
     }
   }
 

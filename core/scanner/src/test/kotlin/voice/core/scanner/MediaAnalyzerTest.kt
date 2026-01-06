@@ -40,7 +40,7 @@ internal class MediaAnalyzerTest {
   @JvmField
   val tempFolder = TemporaryFolder()
 
-  private val analyzer = MediaAnalyzer(
+  private val analyzer = MediaAnalyzerImpl(
     context = ApplicationProvider.getApplicationContext(),
     mp4ChapterExtractor = Mp4ChapterExtractor(
       context = ApplicationProvider.getApplicationContext(),

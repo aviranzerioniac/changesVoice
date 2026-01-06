@@ -20,7 +20,7 @@ internal class Mp4ChapterExtractor(
   private val chapterTrackProcessor: ChapterTrackProcessor,
 ) {
 
-  suspend fun extractChapters(uri: Uri): List<MarkData> = withContext(Dispatchers.IO) {
+  internal suspend fun extractChapters(uri: Uri): List<MarkData> = withContext(Dispatchers.IO) {
     val dataSource = DefaultDataSource.Factory(context).createDataSource()
 
     try {

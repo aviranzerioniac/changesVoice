@@ -8,8 +8,10 @@ import voice.features.bookOverview.overview.BookFilterOption
 internal fun FilterSelector(
   selectedFilter: BookFilterOption,
   onFilterChange: (BookFilterOption) -> Unit,
+  header: (@Composable () -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
+  header?.invoke()
   EnumFilterChipRow(
     entries = BookFilterOption.entries.toTypedArray(),
     selected = selectedFilter,

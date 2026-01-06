@@ -8,8 +8,12 @@ import voice.features.bookOverview.overview.BookSortOption
 internal fun SortSelector(
   selectedSort: BookSortOption,
   onSortChange: (BookSortOption) -> Unit,
+  header: (@Composable () -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
+  if (header != null) {
+    header()
+  }
   EnumFilterChipRow(
     entries = BookSortOption.entries.toTypedArray(),
     selected = selectedSort,

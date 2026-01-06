@@ -78,6 +78,28 @@ class FilenameParserTest {
   }
 
   @Test
+  fun `parse author dash series dash title`() {
+    val result = parser.parse("Brandon Sanderson - Mistborn - The Final Empire.mp3")
+
+    result.author shouldBe "Brandon Sanderson"
+    result.title shouldBe "The Final Empire"
+    result.series.shouldNotBeNull()
+    result.series.name shouldBe "Mistborn"
+    result.series.part.shouldBeNull()
+  }
+
+  @Test
+  fun `parse underscores and en dash`() {
+    val result = parser.parse("N_K_Jemisin – The_Broken_Earth - Book 1.m4b")
+
+    result.author shouldBe "N K Jemisin"
+    result.title shouldBe "Book 1"
+    result.series.shouldNotBeNull()
+    result.series.name shouldBe "The Broken Earth"
+    result.series.part shouldBe "1"
+  }
+
+  @Test
   fun `fallback to full filename as title`() {
     val result = parser.parse("Some Random Audiobook.mp3")
     

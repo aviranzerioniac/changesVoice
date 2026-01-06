@@ -3,7 +3,7 @@ package voice.core.scanner
 import voice.core.data.MarkData
 import kotlin.time.Duration
 
-internal data class Metadata(
+public data class Metadata(
   val duration: Long,
   val artist: String?,
   val album: String?,

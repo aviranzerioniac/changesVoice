@@ -1,6 +1,7 @@
 package voice.features.bookOverview.views.topbar
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +13,9 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -61,63 +62,87 @@ internal fun LibraryPreferencesDialog(
           .fillMaxWidth()
           .padding(vertical = 8.dp)
       ) {
-        Text(
-          text = stringResource(StringsR.string.group_by),
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
         CategorySelector(
           selectedGrouping = grouping,
           onGroupingChange = onGroupingChange,
+          header = {
+            Text(
+              text = stringResource(StringsR.string.library_group_heading),
+              style = MaterialTheme.typography.titleSmall,
+              color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+              text = stringResource(StringsR.string.library_group_subtitle),
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+            )
+          },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Text(
-          text = stringResource(StringsR.string.sort_by),
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
         SortSelector(
           selectedSort = sortOption,
           onSortChange = onSortChange,
+          header = {
+            Text(
+              text = stringResource(StringsR.string.library_sort_heading),
+              style = MaterialTheme.typography.titleSmall,
+              color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+              text = stringResource(StringsR.string.library_sort_subtitle),
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+            )
+          },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LayoutSelector(
+          selectedLayout = layoutMode,
+          onLayoutChange = onLayoutModeChange,
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-          text = stringResource(StringsR.string.filter),
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          text = stringResource(StringsR.string.folder_structure_heading),
+          style = MaterialTheme.typography.titleSmall,
+          color = MaterialTheme.colorScheme.onSurface,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+          text = stringResource(StringsR.string.folder_structure_subtitle),
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+        )
+        FolderPatternSelector(
+          selectedPattern = folderPattern,
+          onPatternChange = onFolderPatternChange,
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         FilterSelector(
           selectedFilter = filterOption,
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Text(
-            text = stringResource(StringsR.string.pref_use_grid),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-          )
-          Switch(
-            checked = layoutMode == BookOverviewLayoutMode.Grid,
-            onCheckedChange = { isGrid ->
-              onLayoutModeChange(
-                if (isGrid) BookOverviewLayoutMode.Grid else BookOverviewLayoutMode.List
-              )
-            },
-          )
-        }
           onFilterChange = onFilterChange,
+          header = {
+            Text(
+              text = stringResource(StringsR.string.library_filter_heading),
+              style = MaterialTheme.typography.titleSmall,
+              color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+              text = stringResource(StringsR.string.library_filter_subtitle),
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+            )
+          },
         )
       }
     },
@@ -177,4 +202,47 @@ private fun FolderStructurePattern.displayName(): String = when (this) {
   FolderStructurePattern.AUTHOR_BOOK -> stringResource(StringsR.string.folder_pattern_author_book)
   FolderStructurePattern.SERIES_BOOK -> stringResource(StringsR.string.folder_pattern_series_book)
   FolderStructurePattern.AUTHOR_SERIES_BOOK -> stringResource(StringsR.string.folder_pattern_author_series_book)
+}
+
+@Composable
+private fun LayoutSelector(
+  selectedLayout: BookOverviewLayoutMode,
+  onLayoutChange: (BookOverviewLayoutMode) -> Unit,
+) {
+  Text(
+    text = stringResource(StringsR.string.library_layout_heading),
+    style = MaterialTheme.typography.titleSmall,
+    color = MaterialTheme.colorScheme.onSurface,
+  )
+  Text(
+    text = stringResource(StringsR.string.library_layout_subtitle),
+    style = MaterialTheme.typography.bodySmall,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+  )
+  Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    LayoutChip(
+      selected = selectedLayout == BookOverviewLayoutMode.List,
+      label = stringResource(StringsR.string.library_layout_list),
+      onClick = { onLayoutChange(BookOverviewLayoutMode.List) },
+    )
+    LayoutChip(
+      selected = selectedLayout == BookOverviewLayoutMode.Grid,
+      label = stringResource(StringsR.string.library_layout_grid),
+      onClick = { onLayoutChange(BookOverviewLayoutMode.Grid) },
+    )
+  }
+}
+
+@Composable
+private fun LayoutChip(
+  selected: Boolean,
+  label: String,
+  onClick: () -> Unit,
+) {
+  FilterChip(
+    selected = selected,
+    onClick = onClick,
+    label = { Text(label) },
+  )
 }

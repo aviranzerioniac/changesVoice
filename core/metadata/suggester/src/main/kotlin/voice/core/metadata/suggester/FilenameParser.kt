@@ -17,25 +17,54 @@ class FilenameParser {
    * - "Book Title (Narrator Name).m4b"
    */
   fun parse(filename: String): ParsedFilename {
-    val cleanName = filename.substringBeforeLast(".")
+    val cleanName = filename
+      .substringBeforeLast(".")
+      .replace("_", " ")
+      .replace(Regex("\\s+"), " ")
+      .trim()
+
+    // Pattern 0: Author - Series - Title (most specific)
+    val tripleDashPattern = """(.+?)\s*[-–]\s*(.+?)\s*[-–]\s*(.+)""".toRegex()
+    tripleDashPattern.find(cleanName)?.let {
+      val authorPart = it.groupValues.getOrNull(1).cleanOrNull()
+      val seriesPart = it.groupValues.getOrNull(2).cleanOrNull()
+      val titlePart = it.groupValues.getOrNull(3).cleanOrNull()
+
+      return ParsedFilename(
+        author = authorPart,
+        title = titlePart,
+        narrator = null,
+        series = seriesPart?.let { seriesName ->
+          extractSeries(seriesName)
+            ?: extractSeries(titlePart)?.let { extracted ->
+              SeriesInfo(name = seriesName, part = extracted.part)
+            }
+            ?: SeriesInfo(name = seriesName, part = null)
+        } ?: extractSeries(titlePart),
+      )
+    }
 
     // Pattern 1: [Author] Title (Narrator)
     val bracketPattern = """\[([^\]]+)\]\s*([^(]+)(?:\(([^)]+)\))?""".toRegex()
     bracketPattern.find(cleanName)?.let {
+      val authorPart = it.groupValues.getOrNull(1).cleanOrNull()
+      val titlePart = it.groupValues.getOrNull(2).cleanOrNull()
+      val narratorPart = it.groupValues.getOrNull(3).cleanOrNull()
+
       return ParsedFilename(
-        author = it.groupValues.getOrNull(1)?.trim(),
-        title = it.groupValues.getOrNull(2)?.trim(),
-        narrator = it.groupValues.getOrNull(3)?.trim(),
-        series = extractSeries(it.groupValues.getOrNull(2)?.trim()),
+        author = authorPart,
+        title = titlePart,
+        narrator = narratorPart,
+        series = extractSeries(titlePart),
       )
     }
 
     // Pattern 2: Author - Title (Narrator)
-    val dashPattern = """([^-]+)\s*-\s*([^(]+)(?:\(([^)]+)\))?""".toRegex()
+    val dashPattern = """(.+?)\s*[-–]\s*([^(]+?)(?:\(([^)]+)\))?$""".toRegex()
     dashPattern.find(cleanName)?.let {
-      val authorPart = it.groupValues.getOrNull(1)?.trim()
-      val titlePart = it.groupValues.getOrNull(2)?.trim()
-      val narratorPart = it.groupValues.getOrNull(3)?.trim()
+      val authorPart = it.groupValues.getOrNull(1).cleanOrNull()
+      val titlePart = it.groupValues.getOrNull(2).cleanOrNull()
+      val narratorPart = it.groupValues.getOrNull(3).cleanOrNull()
 
       return ParsedFilename(
         author = authorPart,
@@ -48,11 +77,14 @@ class FilenameParser {
     // Pattern 3: Title (Narrator)
     val narratorPattern = """([^(]+)\(([^)]+)\)""".toRegex()
     narratorPattern.find(cleanName)?.let {
+      val titlePart = it.groupValues.getOrNull(1).cleanOrNull()
+      val narratorPart = it.groupValues.getOrNull(2).cleanOrNull()
+
       return ParsedFilename(
         author = null,
-        title = it.groupValues.getOrNull(1)?.trim(),
-        narrator = it.groupValues.getOrNull(2)?.trim(),
-        series = extractSeries(it.groupValues.getOrNull(1)?.trim()),
+        title = titlePart,
+        narrator = narratorPart,
+        series = extractSeries(titlePart),
       )
     }
 
@@ -70,10 +102,11 @@ class FilenameParser {
 
     // Pattern: "Series Name 01" or "Series Name #1" or "Series Name Book 1"
     val seriesPatterns = listOf(
-      """(.+?)\s+(?:Book\s+)?(\d+)$""".toRegex(RegexOption.IGNORE_CASE),
-      """(.+?)\s+#(\d+)$""".toRegex(),
       """(.+?)\s+Part\s+(\d+)$""".toRegex(RegexOption.IGNORE_CASE),
       """(.+?)\s+Vol(?:ume)?\s*(\d+)$""".toRegex(RegexOption.IGNORE_CASE),
+      """(.+?)\s+Book\s+(\d+)$""".toRegex(RegexOption.IGNORE_CASE),
+      """(.+?)\s+#(\d+)$""".toRegex(),
+      """(.+?)\s+(\d+)$""".toRegex(),
     )
 
     for (pattern in seriesPatterns) {
@@ -87,6 +120,8 @@ class FilenameParser {
 
     return null
   }
+
+  private fun String?.cleanOrNull(): String? = this?.trim()?.takeUnless { it.isEmpty() }
 }
 
 data class ParsedFilename(

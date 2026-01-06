@@ -11,7 +11,7 @@ import voice.core.logging.api.Logger
 @Inject
 internal class ChapterTrackProcessor {
 
-  operator fun invoke(
+  internal operator fun invoke(
     uri: Uri,
     dataSource: DataSource,
     trackId: Int,

@@ -97,28 +97,6 @@ private fun Settings(
           AnalyticsRow(analyticsEnabled = viewState.analyticsEnabled, toggle = listener::toggleAnalytics)
         }
       }
-      item {
-        ListItem(
-          modifier = Modifier.clickable { listener.toggleGrid() },
-          leadingContent = {
-            val imageVector = if (viewState.useGrid) {
-              Icons.Outlined.GridView
-            } else {
-              Icons.AutoMirrored.Outlined.ViewList
-            }
-            Icon(imageVector, stringResource(StringsR.string.pref_use_grid))
-          },
-          headlineContent = { Text(stringResource(StringsR.string.pref_use_grid)) },
-          trailingContent = {
-            Switch(
-              checked = viewState.useGrid,
-              onCheckedChange = {
-                listener.toggleGrid()
-              },
-            )
-          },
-        )
-      }
 
       item {
         SeekTimeRow(viewState.seekTimeInSeconds) {

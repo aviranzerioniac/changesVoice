@@ -1,7 +1,6 @@
 package voice.features.playbackScreen
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -75,9 +74,6 @@ class BookPlayViewModel(
   @Composable
   fun viewState(): BookPlayViewState? {
     player.pauseIfCurrentBookDifferentFrom(bookId)
-    LaunchedEffect(Unit) {
-      currentBookStoreId.updateData { bookId }
-    }
 
     val book = remember { bookRepository.flow(bookId).filterNotNull() }.collectAsState(initial = null).value
       ?: return null
@@ -181,6 +177,7 @@ class BookPlayViewModel(
   }
 
   fun playPause() {
+    setCurrentBookIfNeeded()
     if (playStateManager.playState != PlayStateManager.PlayState.Playing) {
       scope.launch {
         if (batteryOptimization.shouldRequest()) {
@@ -190,6 +187,14 @@ class BookPlayViewModel(
       }
     }
     player.playPause()
+  }
+
+  private fun setCurrentBookIfNeeded() {
+    scope.launch {
+      currentBookStoreId.updateData { current ->
+        if (current == bookId) current else bookId
+      }
+    }
   }
 
   fun rewind() {

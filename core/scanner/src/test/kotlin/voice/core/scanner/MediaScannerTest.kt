@@ -206,6 +206,7 @@ class MediaScannerTest {
         contentRepo = bookContentRepo,
         mediaAnalyzer = mediaAnalyzer,
         fileFactory = FileBasedDocumentFactory,
+        metadataSuggester = mockk(relaxed = true),
       ),
       deviceHasPermissionBug = mockk(),
     )

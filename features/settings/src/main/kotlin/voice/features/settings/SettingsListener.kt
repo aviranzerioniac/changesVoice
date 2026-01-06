@@ -8,7 +8,6 @@ interface SettingsListener {
   fun toggleDarkTheme()
   fun onThemeClick()
   fun onThemeSelect(theme: ThemeOption)
-  fun toggleGrid()
   fun seekAmountChanged(seconds: Int)
   fun onSeekAmountRowClick()
   fun autoRewindAmountChang(seconds: Int)
@@ -30,7 +29,6 @@ interface SettingsListener {
       override fun toggleDarkTheme() {}
       override fun onThemeClick() {}
       override fun onThemeSelect(theme: ThemeOption) {}
-      override fun toggleGrid() {}
       override fun seekAmountChanged(seconds: Int) {}
       override fun onSeekAmountRowClick() {}
       override fun autoRewindAmountChang(seconds: Int) {}

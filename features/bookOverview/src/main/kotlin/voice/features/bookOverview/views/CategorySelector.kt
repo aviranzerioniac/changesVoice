@@ -8,8 +8,10 @@ import voice.features.bookOverview.overview.BookOverviewGrouping
 internal fun CategorySelector(
   selectedGrouping: BookOverviewGrouping,
   onGroupingChange: (BookOverviewGrouping) -> Unit,
+  header: (@Composable () -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
+  header?.invoke()
   EnumFilterChipRow(
     entries = BookOverviewGrouping.entries.toTypedArray(),
     selected = selectedGrouping,

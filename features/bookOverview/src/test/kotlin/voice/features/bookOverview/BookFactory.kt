@@ -5,6 +5,7 @@ import voice.core.data.BookContent
 import voice.core.data.BookId
 import voice.core.data.Chapter
 import voice.core.data.ChapterId
+import java.io.File
 import java.time.Instant
 import java.util.UUID
 
@@ -14,6 +15,8 @@ fun book(
   currentChapter: ChapterId = chapters.first().id,
   name: String = UUID.randomUUID().toString(),
   author: String? = UUID.randomUUID().toString(),
+  series: String? = null,
+  cover: File? = null,
 ): Book {
   return Book(
     content = BookContent(
@@ -23,7 +26,7 @@ fun book(
       playbackSpeed = 1F,
       addedAt = Instant.EPOCH,
       chapters = chapters.map { it.id },
-      cover = null,
+      cover = cover,
       currentChapter = currentChapter,
       isActive = true,
       lastPlayedAt = Instant.EPOCH,
@@ -32,7 +35,7 @@ fun book(
       gain = 0F,
       genre = null,
       narrator = null,
-      series = null,
+      series = series,
       part = null,
     ),
     chapters = chapters,

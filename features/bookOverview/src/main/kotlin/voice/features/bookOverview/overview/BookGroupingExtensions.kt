@@ -21,17 +21,9 @@ internal fun List<Book>.groupByStrategy(
   }
   
   return when (grouping) {
-    BookOverviewGrouping.COMPLETION_STATUS -> {
-      listOf(
-        GroupedBooks(
-          groupName = "",
-          books = filteredBooks.groupByCategory(sortOption, toItemViewState),
-        ),
-      )
-    }
     BookOverviewGrouping.AUTHOR -> {
       filteredBooks
-        .groupBy { it.content.author ?: "Unknown Author" }
+        .groupBy { it.authorOrFolderFallback() }
         .map { (author, books) ->
           GroupedBooks(
             groupName = author,
@@ -42,7 +34,7 @@ internal fun List<Book>.groupByStrategy(
     }
     BookOverviewGrouping.SERIES -> {
       filteredBooks
-        .groupBy { it.content.series ?: "No Series" }
+        .groupBy { it.seriesOrFolderFallback() }
         .map { (series, books) ->
           GroupedBooks(
             groupName = series,
@@ -54,7 +46,7 @@ internal fun List<Book>.groupByStrategy(
     BookOverviewGrouping.FOLDER -> {
       filteredBooks
         .groupBy {
-          it.content.cover?.parentFile?.name ?: "Unknown Folder"
+          it.content.cover?.parentFile?.normalizedFolderName() ?: "Unknown Folder"
         }
         .map { (folder, books) ->
           GroupedBooks(
@@ -66,6 +58,46 @@ internal fun List<Book>.groupByStrategy(
     }
   }
 }
+
+private fun Book.authorOrFolderFallback(): String {
+  val author = content.author?.takeIf { it.isNotBlank() }
+    ?.normalizeFolderLabel()
+  if (author != null) return author
+
+  val parents = folderHierarchyExcludingBook()
+  val authorFolder = parents.lastOrNull()
+  return authorFolder ?: "Unknown Author"
+}
+
+private fun Book.seriesOrFolderFallback(): String {
+  val series = content.series?.takeIf { it.isNotBlank() }
+    ?.normalizeFolderLabel()
+  if (series != null) return series
+
+  val parents = folderHierarchyExcludingBook()
+  val seriesFolder = parents.dropLast(1).lastOrNull()
+  return seriesFolder ?: "No Series"
+}
+
+private fun Book.folderHierarchyExcludingBook(): List<String> {
+  val bookFolder = content.cover?.parentFile ?: return emptyList()
+  val normalizedHierarchy = generateSequence(bookFolder) { it.parentFile }
+    .mapNotNull { it.normalizedFolderName() }
+    .toList()
+  return normalizedHierarchy.drop(1)
+}
+
+private fun File.normalizedFolderName(): String? {
+  return name.normalizeFolderLabel()
+}
+
+private fun String.normalizeFolderLabel(): String? {
+  val trimmedSeparators = trimEnd('/', '\\')
+  val normalizedWhitespace = trimmedSeparators.trim().replace(WHITESPACE_REGEX, " ")
+  return normalizedWhitespace.takeIf { it.isNotEmpty() }
+}
+
+private val WHITESPACE_REGEX = "\\s+".toRegex()
 
 private fun List<Book>.groupByCategory(
   sortOption: BookSortOption,

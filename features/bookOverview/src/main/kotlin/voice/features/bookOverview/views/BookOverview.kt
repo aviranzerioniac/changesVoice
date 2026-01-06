@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
+import androidx.datastore.core.DataStore
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.IntoSet
@@ -116,6 +117,8 @@ fun BookOverviewScreen(modifier: Modifier = Modifier) {
     onSortChange = bookOverviewViewModel::onSortChange,
     onFilterChange = bookOverviewViewModel::onFilterChange,
     onLayoutModeChange = bookOverviewViewModel::onLayoutModeChange,
+    onFolderPatternChange = bookOverviewViewModel::onFolderPatternChange,
+    expansionStore = bookOverviewViewModel.bookGroupExpansionStore,
   )
   val deleteBookViewState = deleteBookViewModel.state.value
   if (deleteBookViewState != null) {
@@ -194,6 +197,8 @@ internal fun BookOverview(
   onSortChange: (BookSortOption) -> Unit,
   onFilterChange: (BookFilterOption) -> Unit,
   onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
+  onFolderPatternChange: (voice.core.metadata.suggester.FolderStructurePattern) -> Unit,
+  expansionStore: DataStore<Set<String>>? = null,
   modifier: Modifier = Modifier,
 ) {
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -211,6 +216,7 @@ internal fun BookOverview(
         onSortChange = onSortChange,
         onFilterChange = onFilterChange,
         onLayoutModeChange = onLayoutModeChange,
+        onFolderPatternChange = onFolderPatternChange,
       )
     },
     floatingActionButton = {
@@ -231,51 +237,41 @@ internal fun BookOverview(
         .padding(contentPadding)
         .consumeWindowInsets(contentPadding),
     ) {
-      Column {
-        // Currently reading section at the top (only when not searching)
-        if (!viewState.searchActive) {
-          viewState.currentlyReading?.let { currentBook ->
-            CurrentlyReadingSection(
-              book = currentBook,
-              onBookClick = { onBookClick(currentBook.id) },
-            )
-          }
-        }
-        
-        when {
-          viewState.searchActive -> {
-            // Keep existing search behavior
-            when (viewState.layoutMode) {
-              BookOverviewLayoutMode.List -> {
-                ListBooks(
-                  books = viewState.books,
-                  onBookClick = onBookClick,
-                  onBookLongClick = onBookLongClick,
-                  showPermissionBugCard = viewState.showStoragePermissionBugCard,
-                  onPermissionBugCardClick = onPermissionBugCardClick,
-                )
-              }
-              BookOverviewLayoutMode.Grid -> {
-                GridBooks(
-                  books = viewState.books,
-                  onBookClick = onBookClick,
-                  onBookLongClick = onBookLongClick,
-                  showPermissionBugCard = viewState.showStoragePermissionBugCard,
-                  onPermissionBugCardClick = onPermissionBugCardClick,
-                )
-              }
+      when {
+        viewState.searchActive -> {
+          // Keep existing search behavior
+          when (viewState.layoutMode) {
+            BookOverviewLayoutMode.List -> {
+              ListBooks(
+                books = viewState.books,
+                onBookClick = onBookClick,
+                onBookLongClick = onBookLongClick,
+                showPermissionBugCard = viewState.showStoragePermissionBugCard,
+                onPermissionBugCardClick = onPermissionBugCardClick,
+              )
+            }
+            BookOverviewLayoutMode.Grid -> {
+              GridBooks(
+                books = viewState.books,
+                onBookClick = onBookClick,
+                onBookLongClick = onBookLongClick,
+                showPermissionBugCard = viewState.showStoragePermissionBugCard,
+                onPermissionBugCardClick = onPermissionBugCardClick,
+              )
             }
           }
-          else -> {
-            GroupedBooksList(
-              groupedBooks = viewState.groupedBooks,
-              grouping = viewState.grouping,
-              layoutMode = viewState.layoutMode,
-              onBookClick = onBookClick,
-              onBookLongClick = onBookLongClick,
-              currentlyReading = viewState.currentlyReading,
-            )
-          }
+        }
+        else -> {
+          GroupedBooksList(
+            groupedBooks = viewState.groupedBooks,
+            grouping = viewState.grouping,
+            layoutMode = viewState.layoutMode,
+            onBookClick = onBookClick,
+            onBookLongClick = onBookLongClick,
+            currentlyReading = viewState.currentlyReading,
+            recentlyStarted = viewState.recentlyStarted,
+            expansionStore = expansionStore,
+          )
         }
       }
     }
@@ -305,6 +301,7 @@ fun BookOverviewPreview(
       onSortChange = {},
       onFilterChange = {},
       onLayoutModeChange = {},
+      onFolderPatternChange = {},
     )
   }
 }
@@ -329,10 +326,11 @@ internal class BookOverviewPreviewParameterProvider : PreviewParameterProvider<B
         BookOverviewCategory.FINISHED to listOf(book(), book()),
       ),
       groupedBooks = emptyList(),
-      grouping = BookOverviewGrouping.COMPLETION_STATUS,
+      grouping = BookOverviewGrouping.AUTHOR,
       sortOption = BookSortOption.ALPHABETICAL,
       filterOption = BookFilterOption.ALL,
       layoutMode = BookOverviewLayoutMode.List,
+      folderPattern = voice.core.metadata.suggester.FolderStructurePattern.AUTHOR_BOOK,
       playButtonState = BookOverviewViewState.PlayButtonState.Paused,
       showAddBookHint = false,
       showSearchIcon = true,
@@ -345,6 +343,7 @@ internal class BookOverviewPreviewParameterProvider : PreviewParameterProvider<B
       ),
       showStoragePermissionBugCard = false,
       currentlyReading = null,
+      recentlyStarted = listOf(book()),
     ),
   )
 }

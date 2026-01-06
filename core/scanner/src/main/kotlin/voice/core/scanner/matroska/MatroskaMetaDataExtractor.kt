@@ -15,8 +15,8 @@ internal class MatroskaMetaDataExtractor(
 ) : AutoCloseable {
 
   @Inject
-  class Factory(private val context: Context) {
-    fun create(uri: Uri): MatroskaMetaDataExtractor {
+  public class Factory(private val context: Context) {
+    internal fun create(uri: Uri): MatroskaMetaDataExtractor {
       val dataSource = SafSeekableDataSource(context.contentResolver, uri)
       val reader = EBMLReader(dataSource)
       return MatroskaMetaDataExtractor(dataSource, reader)
@@ -28,7 +28,7 @@ internal class MatroskaMetaDataExtractor(
     MatroskaDocTypes.Void.level
   }
 
-  fun readMediaInfo(): MatroskaMediaInfo = try {
+  internal fun readMediaInfo(): MatroskaMediaInfo = try {
     validateHeader(dataSource, reader)
 
     val segment = reader.readNextElement()
@@ -198,10 +198,10 @@ internal class MatroskaMetaDataExtractor(
     return tagName to tagValue
   }
 
-  private inline fun Element.forEachChild(action: (Element) -> Unit) = forEachChild(dataSource, reader, action)
+  private inline fun Element.forEachChild(action: (Element) -> Unit): Unit = forEachChild(dataSource, reader, action)
   private fun Element.readString(): String = readString(dataSource)
 
-  override fun close() = dataSource.close()
+  override fun close(): Unit = dataSource.close()
 }
 
 private data class TagInfo(

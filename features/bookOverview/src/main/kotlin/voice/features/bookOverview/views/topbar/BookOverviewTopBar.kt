@@ -38,6 +38,7 @@ internal fun BookOverviewTopBar(
   onSortChange: (BookSortOption) -> Unit,
   onFilterChange: (BookFilterOption) -> Unit,
   onLayoutModeChange: (BookOverviewLayoutMode) -> Unit,
+  onFolderPatternChange: (voice.core.metadata.suggester.FolderStructurePattern) -> Unit,
 ) {
   Column {
     val horizontalPadding by animateDpAsState(
@@ -58,10 +59,12 @@ internal fun BookOverviewTopBar(
       sortOption = viewState.sortOption,
       filterOption = viewState.filterOption,
       layoutMode = viewState.layoutMode,
+      folderPattern = viewState.folderPattern,
       onGroupingChange = onGroupingChange,
       onSortChange = onSortChange,
       onFilterChange = onFilterChange,
       onLayoutModeChange = onLayoutModeChange,
+      onFolderPatternChange = onFolderPatternChange,
     )
     var showLoading by remember { mutableStateOf(true) }
     LaunchedEffect(viewState.isLoading) {
@@ -88,10 +91,11 @@ private fun BookOverviewTopBarPreview() {
       viewState = BookOverviewViewState(
         books = persistentMapOf(),
         groupedBooks = emptyList(),
-        grouping = BookOverviewGrouping.COMPLETION_STATUS,
+        grouping = BookOverviewGrouping.AUTHOR,
         sortOption = BookSortOption.ALPHABETICAL,
         filterOption = BookFilterOption.ALL,
         layoutMode = BookOverviewLayoutMode.List,
+        folderPattern = voice.core.metadata.suggester.FolderStructurePattern.AUTHOR_BOOK,
         playButtonState = BookOverviewViewState.PlayButtonState.Paused,
         showAddBookHint = true,
         showSearchIcon = true,
@@ -104,6 +108,7 @@ private fun BookOverviewTopBarPreview() {
         ),
         showStoragePermissionBugCard = false,
         currentlyReading = null,
+        recentlyStarted = emptyList(),
       ),
       onBookFolderClick = {},
       onSettingsClick = {},
@@ -113,6 +118,8 @@ private fun BookOverviewTopBarPreview() {
       onGroupingChange = {},
       onSortChange = {},
       onFilterChange = {},
+      onLayoutModeChange = {},
+      onFolderPatternChange = {},
     )
   }
 }

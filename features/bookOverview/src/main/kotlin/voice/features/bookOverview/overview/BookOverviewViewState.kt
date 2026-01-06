@@ -3,6 +3,7 @@ package voice.features.bookOverview.overview
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
+import voice.core.metadata.suggester.FolderStructurePattern
 import voice.features.bookOverview.search.BookSearchViewState
 
 @Immutable
@@ -13,6 +14,7 @@ data class BookOverviewViewState(
   val sortOption: BookSortOption,
   val filterOption: BookFilterOption,
   val layoutMode: BookOverviewLayoutMode,
+  val folderPattern: FolderStructurePattern,
   val playButtonState: PlayButtonState?,
   val showAddBookHint: Boolean,
   val showSearchIcon: Boolean,
@@ -21,16 +23,18 @@ data class BookOverviewViewState(
   val searchViewState: BookSearchViewState,
   val showStoragePermissionBugCard: Boolean,
   val currentlyReading: BookOverviewItemViewState?,
+  val recentlyStarted: List<BookOverviewItemViewState>,
 ) {
 
   companion object {
     val Loading = BookOverviewViewState(
       books = persistentMapOf(),
       groupedBooks = emptyList(),
-      grouping = BookOverviewGrouping.COMPLETION_STATUS,
+      grouping = BookOverviewGrouping.AUTHOR,
       sortOption = BookSortOption.ALPHABETICAL,
       filterOption = BookFilterOption.ALL,
       layoutMode = BookOverviewLayoutMode.List,
+      folderPattern = FolderStructurePattern.AUTHOR_BOOK,
       playButtonState = null,
       showAddBookHint = false,
       showSearchIcon = false,
@@ -43,6 +47,7 @@ data class BookOverviewViewState(
       ),
       showStoragePermissionBugCard = false,
       currentlyReading = null,
+      recentlyStarted = emptyList(),
     )
   }
 

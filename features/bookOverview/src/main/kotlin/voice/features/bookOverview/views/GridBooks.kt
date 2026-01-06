@@ -30,12 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import kotlinx.collections.immutable.ImmutableMap
 import voice.core.data.BookId
 import voice.features.bookOverview.overview.BookOverviewCategory
@@ -126,7 +128,10 @@ internal fun GridBook(
         AsyncImage(
           modifier = Modifier.fillMaxSize(),
           contentScale = ContentScale.Crop,
-          model = book.cover?.file,
+          model = ImageRequest.Builder(LocalContext.current)
+            .data(book.cover?.file)
+            .crossfade(false)
+            .build(),
           placeholder = painterResource(id = UiR.drawable.album_art),
           error = painterResource(id = UiR.drawable.album_art),
           contentDescription = null,

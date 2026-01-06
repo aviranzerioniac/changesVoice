@@ -54,7 +54,7 @@ interface BookOverviewGraph {
       return factory.create(
         serializer = BookOverviewGroupingSerializer,
         fileName = "BookGrouping",
-        defaultValue = BookOverviewGrouping.COMPLETION_STATUS,
+        defaultValue = BookOverviewGrouping.AUTHOR,
       )
     }
 
@@ -102,17 +102,16 @@ private object BookOverviewGroupingSerializer : KSerializer<BookOverviewGrouping
 
   override fun deserialize(decoder: Decoder): BookOverviewGrouping {
     return when (decoder.decodeString()) {
-      "COMPLETION_STATUS" -> BookOverviewGrouping.COMPLETION_STATUS
+      "COMPLETION_STATUS" -> BookOverviewGrouping.AUTHOR // Legacy fallback
       "AUTHOR" -> BookOverviewGrouping.AUTHOR
       "SERIES" -> BookOverviewGrouping.SERIES
       "FOLDER" -> BookOverviewGrouping.FOLDER
-      else -> BookOverviewGrouping.COMPLETION_STATUS
+      else -> BookOverviewGrouping.AUTHOR
     }
   }
 
   override fun serialize(encoder: Encoder, value: BookOverviewGrouping) {
     val serialized = when (value) {
-      BookOverviewGrouping.COMPLETION_STATUS -> "COMPLETION_STATUS"
       BookOverviewGrouping.AUTHOR -> "AUTHOR"
       BookOverviewGrouping.SERIES -> "SERIES"
       BookOverviewGrouping.FOLDER -> "FOLDER"
